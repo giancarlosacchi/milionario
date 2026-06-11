@@ -303,7 +303,7 @@
   <!-- ANALISI INDIVIDUALE -->
   <p class="section-title">🔬 Analisi Individuale Broker</p>
   <div class="grid-2">
-    <div class="card"><h3><span class="h3-dot"></span>Commissione Totale per Broker ($)</h3><div class="chart-wrap tall"><canvas id="chartBrkrTotComm"></canvas></div></div>
+    <div class="card"><h3><span class="h3-dot"></span>Produzione $ per Broker (quota divisa)</h3><div class="chart-wrap tall"><canvas id="chartBrkrTotComm"></canvas></div></div>
     <div class="card"><h3><span class="h3-dot"></span>Commissione Media per Fixture</h3><div class="chart-wrap tall"><canvas id="chartBrkrAvgComm"></canvas></div></div>
   </div>
   <div class="grid-2">
@@ -564,7 +564,7 @@ function compute(gfData) {
   const brkrAvgComm = {}, brkrTotComm = {};
   BRKR_CORE.forEach(b => {
     const fixes = gfData.filter(r => getBrokers(r.brkr).includes(b));
-    brkrTotComm[b] = fixes.reduce((s,r)=>s+r.minComm,0);
+    brkrTotComm[b] = fixes.reduce((s,r)=>s+r.minComm/getBrokers(r.brkr).length,0);
     brkrAvgComm[b] = fixes.length > 0 ? brkrTotComm[b] / fixes.length : 0;
   });
 
@@ -584,7 +584,7 @@ function compute(gfData) {
 
   const brkrSummary = BRKR_CORE.map(b => {
     const fixes = gfData.filter(r => getBrokers(r.brkr).includes(b));
-    const totalComm = fixes.reduce((s,r)=>s+r.minComm,0);
+    const totalComm = fixes.reduce((s,r)=>s+r.minComm/getBrokers(r.brkr).length,0);
     const charterers = new Set(fixes.map(r=>r.chrtr).filter(Boolean)).size;
     return { broker:b, fix:fixes.length, comm:totalComm, avgComm: fixes.length>0?totalComm/fixes.length:0, charterers };
   }).filter(r=>r.fix>0).sort((a,b)=>b.comm-a.comm);
@@ -783,7 +783,7 @@ function render(d) {
       backgroundColor: activeBrkrs.map(b => BRKR_COLORS[b]+'d9'),
       borderRadius:7, borderSkipped:false }]},
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>' $'+ctx.parsed.x.toLocaleString('it-IT')+' prodotti'}}},
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>' $'+ctx.parsed.x.toLocaleString('it-IT')+' (quota divisa)'}}},
       scales:{ x:{grid:{color:GC},ticks:{callback:v=>fmtM(v)}}, y:{grid:{display:false},ticks:{font:{weight:'700'}}} } }
   });
 
@@ -975,8 +975,8 @@ function _renderBrokerModal() {
         (r.chrtr||'').toLowerCase().includes(_bmFilter) ||
         (r.ows||'').toLowerCase().includes(_bmFilter))
     : sorted;
-  const totalComm = _bmFixes.reduce((s,r)=>s+r.minComm,0);
-  const filteredComm = filtered.reduce((s,r)=>s+r.minComm,0);
+  const totalComm = _bmFixes.reduce((s,r)=>s+r.minComm/getBrokers(r.brkr).length,0);
+  const filteredComm = filtered.reduce((s,r)=>s+r.minComm/getBrokers(r.brkr).length,0);
   const countLabel = _bmFilter ? `${filtered.length}/${_bmFixes.length}` : `${_bmFixes.length}`;
   document.getElementById('bm-title').innerHTML =
     `<span style="color:${BRKR_COLORS[broker]||'#4f8ff7'}">${broker}</span>&nbsp; <span style="font-weight:500;color:var(--muted);font-size:.88rem;">${countLabel} contratti · ${fmtM(totalComm)} prodotti</span>`;
