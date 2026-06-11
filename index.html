@@ -775,12 +775,13 @@ function render(d) {
   const activeBrkrs = BRKR_CORE.filter(b => d.brkrCount[b] > 0);
 
   // Commissione TOTALE per broker ($ prodotti)
+  const brkrByComm = [...activeBrkrs].sort((a,b)=>(d.brkrTotComm[b]||0)-(d.brkrTotComm[a]||0));
   charts.c11 = new Chart(document.getElementById('chartBrkrTotComm'), {
     type:'bar',
-    data:{ labels: activeBrkrs, datasets:[{
+    data:{ labels: brkrByComm, datasets:[{
       label:'Comm. totale ($)',
-      data: activeBrkrs.map(b => Math.round(d.brkrTotComm[b])),
-      backgroundColor: activeBrkrs.map(b => BRKR_COLORS[b]+'d9'),
+      data: brkrByComm.map(b => Math.round(d.brkrTotComm[b])),
+      backgroundColor: brkrByComm.map(b => BRKR_COLORS[b]+'d9'),
       borderRadius:7, borderSkipped:false }]},
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>' $'+ctx.parsed.x.toLocaleString('it-IT')+' (quota divisa)'}}},
