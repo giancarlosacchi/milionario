@@ -1048,9 +1048,14 @@ const _hiddenCards = {};
 function initCardHideButtons() {
   document.querySelectorAll('.card').forEach((card, i) => {
     if (card.dataset.cardId) return;
-    const id = 'card-' + i;
+    // ID stabile basato sul contenuto
+    const canvas = card.querySelector('canvas');
+    const tbody  = card.querySelector('tbody');
+    const h3     = card.querySelector('h3');
+    const id = canvas ? 'c_' + canvas.id
+             : tbody  ? 'c_' + tbody.id
+             : 'c_' + (h3 ? h3.textContent.trim().substring(0,22).replace(/\W+/g,'_') : i);
     card.dataset.cardId = id;
-    const h3 = card.querySelector('h3');
     if (!h3) return;
     const title = (h3.textContent || '').trim().substring(0,28) || ('Grafico ' + (i+1));
     const btn = document.createElement('button');
@@ -1060,20 +1065,29 @@ function initCardHideButtons() {
     btn.onclick = e => { e.stopPropagation(); hideCard(id, title); };
     h3.appendChild(btn);
   });
+  // Assegna ID stabili alle griglie (sezione + indice)
+  document.querySelectorAll('.grid-1,.grid-2,.grid-3').forEach(grid => {
+    if (!grid.dataset.gridId) {
+      const sec = grid.closest('.section-block');
+      const secTitle = sec?.querySelector('.section-title')?.textContent.replace(/\s+/g,' ').trim().substring(0,18) || 'main';
+      const idx = sec ? [...sec.querySelectorAll('.grid-1,.grid-2,.grid-3')].indexOf(grid) : 0;
+      grid.dataset.gridId = secTitle + '_' + idx;
+    }
+  });
   if (typeof Sortable !== 'undefined') {
-    // Drag intera sezione (handle: section-title)
     const mainEl = document.getElementById('main');
     if (mainEl && !mainEl._sectionSortable) {
       mainEl._sectionSortable = new Sortable(mainEl, {
         animation: 250, handle: '.section-title',
         ghostClass: 'sortable-ghost', dragClass: 'sortable-drag',
         filter: '.kpi-strip',
+        onEnd: _saveState,
       });
     }
-    // Drag singola card dentro la griglia
     document.querySelectorAll('.grid-1,.grid-2,.grid-3').forEach(grid => {
       if (!grid._sortable) grid._sortable = new Sortable(grid, {
-        animation: 200, handle: 'h3', ghostClass:'sortable-ghost', dragClass:'sortable-drag'
+        animation: 200, handle: 'h3', ghostClass:'sortable-ghost', dragClass:'sortable-drag',
+        onEnd: _saveState,
       });
     });
   }
@@ -1084,13 +1098,13 @@ function hideCard(id, title) {
   if (card) card.style.display = 'none';
   _hiddenCards[id] = title;
   updateHiddenPanel();
-  // Se tutte le card della sezione sono nascoste, nascondi anche il titolo
   const section = card && card.closest('.section-block');
   if (section) {
     const visible = section.querySelectorAll('.card:not([style*="none"])');
     const secTitle = section.querySelector('.section-title');
     if (secTitle && visible.length === 0) secTitle.style.display = 'none';
   }
+  _saveState();
 }
 
 function restoreCard(id) {
@@ -1098,12 +1112,12 @@ function restoreCard(id) {
   if (card) card.style.display = '';
   delete _hiddenCards[id];
   updateHiddenPanel();
-  // Ripristina il titolo della sezione se necessario
   const section = card && card.closest('.section-block');
   if (section) {
     const secTitle = section.querySelector('.section-title');
     if (secTitle) secTitle.style.display = '';
   }
+  _saveState();
 }
 
 function updateHiddenPanel() {
@@ -1116,6 +1130,75 @@ function updateHiddenPanel() {
   panel.innerHTML = keys.map(id =>
     `<div class="sb-chart-row"><span style="flex:1;font-size:.77rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_hiddenCards[id]}</span><button class="sb-restore-btn" onclick="restoreCard('${id}')">↩ mostra</button></div>`
   ).join('');
+}
+
+// ── PERSIST UI STATE ─────────────────────────────────────────────────────────
+const _LS = 'mil_ui_v2';
+
+function _saveState() {
+  try {
+    const state = {
+      hidden: { ..._hiddenCards },
+      cardOrder: {},
+      sectionOrder: [],
+    };
+    document.querySelectorAll('.grid-1,.grid-2,.grid-3').forEach(grid => {
+      const gid = grid.dataset.gridId;
+      if (!gid) return;
+      state.cardOrder[gid] = [...grid.querySelectorAll(':scope > .card[data-card-id]')].map(c => c.dataset.cardId);
+    });
+    state.sectionOrder = [...document.querySelectorAll('#main > .section-block')].map(s => {
+      const t = s.querySelector('.section-title');
+      return t ? t.textContent.replace(/\s+/g,' ').trim() : '';
+    }).filter(Boolean);
+    localStorage.setItem(_LS, JSON.stringify(state));
+  } catch(e) {}
+}
+
+function _restoreState() {
+  try {
+    const raw = localStorage.getItem(_LS);
+    if (!raw) return;
+    const state = JSON.parse(raw);
+
+    if (state.hidden) {
+      Object.entries(state.hidden).forEach(([id, title]) => {
+        const card = document.querySelector(`[data-card-id="${id}"]`);
+        if (card) { card.style.display = 'none'; _hiddenCards[id] = title; }
+      });
+      updateHiddenPanel();
+      document.querySelectorAll('.section-block').forEach(sec => {
+        const vis = sec.querySelectorAll('.card:not([style*="none"])');
+        const t   = sec.querySelector('.section-title');
+        if (t && vis.length === 0) t.style.display = 'none';
+      });
+    }
+
+    if (state.cardOrder) {
+      document.querySelectorAll('.grid-1,.grid-2,.grid-3').forEach(grid => {
+        const gid   = grid.dataset.gridId;
+        const order = gid && state.cardOrder[gid];
+        if (!order) return;
+        order.forEach(cid => {
+          const card = grid.querySelector(`[data-card-id="${cid}"]`);
+          if (card) grid.appendChild(card);
+        });
+      });
+    }
+
+    if (state.sectionOrder && state.sectionOrder.length) {
+      const main = document.getElementById('main');
+      const map  = {};
+      document.querySelectorAll('#main > .section-block').forEach(s => {
+        const t = s.querySelector('.section-title');
+        if (t) map[t.textContent.replace(/\s+/g,' ').trim()] = s;
+      });
+      state.sectionOrder.forEach(key => {
+        const s = map[key];
+        if (s) main.appendChild(s);
+      });
+    }
+  } catch(e) {}
 }
 
 // ── THEME ─────────────────────────────────────────────────────────────────────
@@ -1173,6 +1256,7 @@ async function init() {
     render(data);
     revealCards();
     initCardHideButtons();
+    _restoreState();
     initSidebar(data, gfData);
   } catch(e) {
     document.getElementById('loader').classList.add('hidden');
