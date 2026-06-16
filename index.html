@@ -83,7 +83,7 @@
   #theme-btn:hover{border-color:var(--gold);color:var(--gold);}
 
   /* LAYOUT */
-  .container{max-width:1440px;margin:0 auto;padding:30px 26px;}
+  .container{max-width:1440px;margin:0 auto;padding:30px 48px;}
   #main{display:none;}
   #main.visible{display:block;}
 
@@ -268,7 +268,7 @@
   <!-- KPI -->
   <div class="kpi-strip">
     <div class="kpi" style="--kc:#4f8ff7"><div class="kpi-top"><div class="kpi-ico">⚓</div><div class="kpi-label">Fixture Totali</div></div><div class="kpi-value" id="kpi-fix">—</div><div class="kpi-sub" id="kpi-months">—</div></div>
-    <div class="kpi" style="--kc:#34d399"><div class="kpi-top"><div class="kpi-ico">💵</div><div class="kpi-label">Commissione Totale</div></div><div class="kpi-value" id="kpi-comm">—</div><div class="kpi-sub">MIN. COMM lorda</div></div><div class="kpi-label">OWS Seguiti</div></div><div class="kpi-value" id="kpi-ows">—</div><div class="kpi-sub">Armatori che seguiamo</div></div>
+    <div class="kpi" style="--kc:#34d399"><div class="kpi-top"><div class="kpi-ico">💵</div><div class="kpi-label">Commissione Totale</div></div><div class="kpi-value" id="kpi-comm">—</div><div class="kpi-sub">MIN. COMM lorda</div></div>
   </div>
 
   <!-- ANDAMENTO MENSILE -->
@@ -884,10 +884,6 @@ let _period = 'all';
 function getFilteredData() {
   const g = window._gfData || [];
   if (_period === 'all') return g;
-  if (_period === '12m') {
-    const cut = new Date(); cut.setMonth(cut.getMonth() - 12);
-    return g.filter(r => r.date >= cut);
-  }
   return g.filter(r => r.date.getFullYear() === +_period);
 }
 
@@ -1080,7 +1076,7 @@ function initCardHideButtons() {
       mainEl._sectionSortable = new Sortable(mainEl, {
         animation: 250, handle: '.section-title',
         ghostClass: 'sortable-ghost', dragClass: 'sortable-drag',
-        filter: '.kpi-strip',
+        draggable: '.section-block',
         onEnd: _saveState,
       });
     }
