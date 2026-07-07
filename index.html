@@ -83,12 +83,12 @@
   #theme-btn:hover{border-color:var(--gold);color:var(--gold);}
 
   /* LAYOUT */
-  .container{max-width:1440px;margin:0 auto;padding:30px 48px;}
+  .container{max-width:1440px;margin:0 auto;padding:30px 26px;}
   #main{display:none;}
   #main.visible{display:block;}
 
   /* KPI */
-  .kpi-strip{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:34px;}
+  .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:34px;}
   .kpi{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--border);
     border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;
     box-shadow:var(--shadow);transition:transform .22s,border-color .22s;}
@@ -106,11 +106,8 @@
 
   /* SECTIONS */
   .section-title{display:flex;align-items:center;gap:10px;margin:6px 0 16px;
-    font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:2.4px;color:var(--gold);cursor:grab;}
-  .section-title:active{cursor:grabbing;}
+    font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:2.4px;color:var(--gold);}
   .section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent);}
-  .section-block{margin-bottom:4px;}
-  .section-block.sortable-ghost{opacity:.3;border:2px dashed var(--blue);border-radius:12px;padding:8px;}
 
   .grid-1{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:18px;}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
@@ -269,47 +266,41 @@
   <div class="kpi-strip">
     <div class="kpi" style="--kc:#4f8ff7"><div class="kpi-top"><div class="kpi-ico">⚓</div><div class="kpi-label">Fixture Totali</div></div><div class="kpi-value" id="kpi-fix">—</div><div class="kpi-sub" id="kpi-months">—</div></div>
     <div class="kpi" style="--kc:#34d399"><div class="kpi-top"><div class="kpi-ico">💵</div><div class="kpi-label">Commissione Totale</div></div><div class="kpi-value" id="kpi-comm">—</div><div class="kpi-sub">MIN. COMM lorda</div></div>
+    <div class="kpi" style="--kc:#f0b429"><div class="kpi-top"><div class="kpi-ico">📊</div><div class="kpi-label">Comm. Media / Fixture</div></div><div class="kpi-value" id="kpi-avg">—</div><div class="kpi-sub">Per singola fixture</div></div>
+    <div class="kpi" style="--kc:#a78bfa"><div class="kpi-top"><div class="kpi-ico">🤝</div><div class="kpi-label">CHRTR Seguiti</div></div><div class="kpi-value" id="kpi-chrtr">—</div><div class="kpi-sub">Charterer che seguiamo</div></div>
+    <div class="kpi" style="--kc:#fb923c"><div class="kpi-top"><div class="kpi-ico">🚢</div><div class="kpi-label">OWS Seguiti</div></div><div class="kpi-value" id="kpi-ows">—</div><div class="kpi-sub">Armatori che seguiamo</div></div>
   </div>
 
   <!-- ANDAMENTO MENSILE -->
-  <div class="section-block">
   <p class="section-title">📈 Andamento Mensile</p>
   <div class="grid-2">
     <div class="card"><h3><span class="h3-dot"></span>Fixture Mensili</h3><div class="chart-wrap tall"><canvas id="chartMonthlyCount"></canvas></div></div>
     <div class="card"><h3><span class="h3-dot"></span>Commissione Mensile</h3><div class="chart-wrap tall"><canvas id="chartMonthlyComm"></canvas></div></div>
   </div>
-  </div>
 
   <!-- CLIENTI -->
-  <div class="section-block">
   <p class="section-title">🤝 Clienti Seguiti</p>
   <div class="grid-2">
     <div class="card"><h3><span class="h3-dot"></span>Top CHRTR Seguiti</h3><div class="chart-wrap tall"><canvas id="chartTopChrtrSeguiti"></canvas></div></div>
     <div class="card"><h3><span class="h3-dot"></span>Top OWS Seguiti</h3><div class="chart-wrap tall"><canvas id="chartTopOwsSeguiti"></canvas></div></div>
   </div>
-  </div>
 
   <!-- BROKER -->
-  <div class="section-block">
   <p class="section-title">👥 Analisi Broker</p>
   <div class="grid-3">
     <div class="card"><h3><span class="h3-dot"></span>Broker Singoli</h3><div class="chart-wrap tall"><canvas id="chartBrkrIndiv"></canvas></div></div>
     <div class="card"><h3><span class="h3-dot"></span>🔥 Coppie Broker più Quotate</h3><div class="chart-wrap tall"><canvas id="chartBrkrPairs"></canvas></div></div>
     <div class="card"><h3><span class="h3-dot"></span>Distribuzione Uffici</h3><div class="chart-wrap tall"><canvas id="chartOffice"></canvas></div></div>
   </div>
-  </div>
 
   <!-- PERFORMANCE -->
-  <div class="section-block">
   <p class="section-title">🏆 Performance Broker</p>
   <div class="grid-2">
     <div class="card"><h3><span class="h3-dot"></span>Fixture per Broker</h3><div class="chart-wrap tall"><canvas id="chartBrkrFixYTD"></canvas></div></div>
     <div class="card"><h3><span class="h3-dot"></span>Fixture per Broker per Anno</h3><div class="chart-wrap tall"><canvas id="chartBrkrFixYear"></canvas></div></div>
   </div>
-  </div>
 
   <!-- ANALISI INDIVIDUALE -->
-  <div class="section-block">
   <p class="section-title">🔬 Analisi Individuale Broker</p>
   <div class="grid-2">
     <div class="card"><h3><span class="h3-dot"></span>Produzione $ per Broker (quota divisa)</h3><div class="chart-wrap tall"><canvas id="chartBrkrTotComm"></canvas></div></div>
@@ -327,10 +318,8 @@
       </table>
     </div>
   </div>
-  </div>
 
   <!-- TABELLE -->
-  <div class="section-block">
   <p class="section-title">📊 Riepilogo Dati</p>
   <div class="grid-1">
     <div class="card"><h3><span class="h3-dot"></span>Top 10 Charterer per Commissione</h3>
@@ -347,7 +336,6 @@
         <tbody id="tblMonthly"></tbody>
       </table>
     </div>
-  </div>
   </div>
 
 </div><!-- /main -->
@@ -643,7 +631,9 @@ function render(d) {
   animateValue(document.getElementById('kpi-fix'), d.totalFix, v => Math.round(v).toLocaleString('it-IT'));
   document.getElementById('kpi-months').textContent = d.months.length + ' mesi di attività';
   animateValue(document.getElementById('kpi-comm'), d.totalComm, fmtM);
-
+  animateValue(document.getElementById('kpi-avg'), d.totalFix > 0 ? d.totalComm/d.totalFix : 0, fmtM);
+  animateValue(document.getElementById('kpi-chrtr'), d.followedChrtr.size || d.uniqueChrtr, v => String(Math.round(v)));
+  animateValue(document.getElementById('kpi-ows'), d.followedOws.size, v => String(Math.round(v)));
   const _lu = document.getElementById('last-updated');
   if (_lu) _lu.textContent = '↻ ' + new Date().toLocaleString('it-IT', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
 
@@ -884,6 +874,10 @@ let _period = 'all';
 function getFilteredData() {
   const g = window._gfData || [];
   if (_period === 'all') return g;
+  if (_period === '12m') {
+    const cut = new Date(); cut.setMonth(cut.getMonth() - 12);
+    return g.filter(r => r.date >= cut);
+  }
   return g.filter(r => r.date.getFullYear() === +_period);
 }
 
@@ -903,7 +897,7 @@ function buildPeriodChips(allYears) {
   wrap.innerHTML = '';
   const items = [{p:'all', label:'Tutto'}]
     .concat(allYears.slice().reverse().map(y => ({p:String(y), label:String(y)})))
-    ;
+    .concat([{p:'12m', label:'Ultimi 12 mesi'}]);
   items.forEach(it => {
     const b = document.createElement('button');
     b.className = 'chip' + (it.p === _period ? ' active' : '');
@@ -937,16 +931,30 @@ function initSidebar(data, gfData) {
 }
 
 // ── BROKER MODAL ──────────────────────────────────────────────────────────────
-let _bmBroker = null, _bmFixes = [], _bmSortKey = 'date', _bmSortDir = -1, _bmFilter = '';
+let _bmBroker = null, _bmAll = [], _bmFixes = [], _bmSortKey = 'date', _bmSortDir = -1, _bmFilter = '', _bmPeriod = 'all';
+
+const bmShare = r => r.minComm / Math.max(getBrokers(r.brkr).length, 1);
+const bmCo = r => getBrokers(r.brkr).filter(b => b !== _bmBroker).join(' + ');
 
 function openBrokerModal(broker, gfData) {
-  const src = gfData || getFilteredData();
+  const src = window._gfData || gfData || [];
   _bmBroker = broker;
-  _bmFixes = src.filter(r => getBrokers(r.brkr).includes(broker));
-  _bmSortKey = 'date'; _bmSortDir = -1; _bmFilter = '';
-  _renderBrokerModal();
+  _bmAll = src.filter(r => getBrokers(r.brkr).includes(broker));
+  _bmPeriod = 'all'; _bmSortKey = 'date'; _bmSortDir = -1; _bmFilter = '';
+  _applyBmPeriod();
   document.getElementById('broker-modal').classList.add('open');
 }
+
+function _applyBmPeriod() {
+  if (_bmPeriod === 'all') _bmFixes = _bmAll;
+  else if (_bmPeriod === '12m') {
+    const cut = new Date(); cut.setMonth(cut.getMonth() - 12);
+    _bmFixes = _bmAll.filter(r => r.date >= cut);
+  } else _bmFixes = _bmAll.filter(r => r.date.getFullYear() === +_bmPeriod);
+  _renderBrokerModal();
+}
+
+function setBmPeriod(p) { _bmPeriod = p; _applyBmPeriod(); }
 
 function sortBrokerTable(key) {
   if (_bmSortKey === key) { _bmSortDir *= -1; }
@@ -969,9 +977,10 @@ function _renderBrokerModal() {
     else if (_bmSortKey === 'vsl')    { va = (a.vsl||'').toLowerCase();  vb = (b.vsl||'').toLowerCase(); }
     else if (_bmSortKey === 'chrtr')  { va = (a.chrtr||'').toLowerCase(); vb = (b.chrtr||'').toLowerCase(); }
     else if (_bmSortKey === 'ows')    { va = (a.ows||'').toLowerCase();   vb = (b.ows||'').toLowerCase(); }
+    else if (_bmSortKey === 'cobrkr') { va = bmCo(a).toLowerCase(); vb = bmCo(b).toLowerCase(); }
     else if (_bmSortKey === 'side')   { va = (a.side||'').toLowerCase();  vb = (b.side||'').toLowerCase(); }
     else if (_bmSortKey === 'office') { va = (a.office||'').toLowerCase();vb = (b.office||'').toLowerCase(); }
-    else if (_bmSortKey === 'comm')   { va = a.minComm||0; vb = b.minComm||0; }
+    else if (_bmSortKey === 'comm')   { va = bmShare(a); vb = bmShare(b); }
     else { va = 0; vb = 0; }
     if (typeof va === 'string') return _bmSortDir * va.localeCompare(vb);
     return _bmSortDir * (va - vb);
@@ -980,36 +989,41 @@ function _renderBrokerModal() {
     ? sorted.filter(r =>
         (r.vsl||'').toLowerCase().includes(_bmFilter) ||
         (r.chrtr||'').toLowerCase().includes(_bmFilter) ||
-        (r.ows||'').toLowerCase().includes(_bmFilter))
+        (r.ows||'').toLowerCase().includes(_bmFilter) ||
+        bmCo(r).toLowerCase().includes(_bmFilter))
     : sorted;
-  const totalComm = _bmFixes.reduce((s,r)=>s+r.minComm/getBrokers(r.brkr).length,0);
-  const filteredComm = filtered.reduce((s,r)=>s+r.minComm/getBrokers(r.brkr).length,0);
+  const totalComm = _bmFixes.reduce((s,r)=>s+bmShare(r),0);
+  const filteredComm = filtered.reduce((s,r)=>s+bmShare(r),0);
   const countLabel = _bmFilter ? `${filtered.length}/${_bmFixes.length}` : `${_bmFixes.length}`;
   document.getElementById('bm-title').innerHTML =
-    `<span style="color:${BRKR_COLORS[broker]||'#4f8ff7'}">${broker}</span>&nbsp; <span style="font-weight:500;color:var(--muted);font-size:.88rem;">${countLabel} contratti · ${fmtM(totalComm)} prodotti</span>`;
+    `<span style="color:${BRKR_COLORS[broker]||'#4f8ff7'}">${broker}</span>&nbsp; <span style="font-weight:500;color:var(--muted);font-size:.88rem;">${countLabel} contratti · ${fmtM(totalComm)} prodotti (quota)</span>`;
   const cols = [
     {key:'date',   label:'Data',      cls:''},
     {key:'vsl',    label:'Vessel',    cls:''},
     {key:'chrtr',  label:'CHRTR',     cls:''},
     {key:'ows',    label:'OWS',       cls:''},
+    {key:'cobrkr', label:'Con',       cls:''},
     {key:'side',   label:'Side',      cls:''},
     {key:'office', label:'Office',    cls:''},
-    {key:'comm',   label:'Comm. Min.',cls:'num'},
+    {key:'comm',   label:'Quota Comm.',cls:'num'},
   ];
   const dispComm = _bmFilter ? filteredComm : totalComm;
-  const dispLen  = _bmFilter ? filtered.length : _bmFixes.length;
-  let html = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;">
+  const years = [...new Set(_bmAll.map(r=>r.date.getFullYear()))].sort((a,b)=>b-a);
+  const chips = [{p:'all',l:'Tutto'}].concat(years.map(y=>({p:String(y),l:String(y)}))).concat([{p:'12m',l:'Ultimi 12 mesi'}]);
+  let html = `<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;">` +
+    chips.map(c=>`<button class="chip${_bmPeriod===c.p?' active':''}" onclick="setBmPeriod('${c.p}')">${c.l}</button>`).join('') +
+  `</div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px;">
     <div style="background:var(--bg2);padding:15px;border-radius:12px;text-align:center;border:1px solid var(--border);"><div style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:6px;">Fixture${_bmFilter?' trovate':' Totali'}</div><div style="font-size:1.6rem;font-weight:900;">${_bmFilter?countLabel:_bmFixes.length}</div></div>
-    <div style="background:var(--bg2);padding:15px;border-radius:12px;text-align:center;border:1px solid var(--border);"><div style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:6px;">$ Prodotti</div><div style="font-size:1.6rem;font-weight:900;color:var(--gold)">${fmtM(dispComm)}</div></div>
-    <div style="background:var(--bg2);padding:15px;border-radius:12px;text-align:center;border:1px solid var(--border);"><div style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:6px;">Comm. Media</div><div style="font-size:1.6rem;font-weight:900;color:var(--green)">${dispLen?fmtM(dispComm/dispLen):'—'}</div></div>
+    <div style="background:var(--bg2);padding:15px;border-radius:12px;text-align:center;border:1px solid var(--border);"><div style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:6px;">$ Prodotti (quota)</div><div style="font-size:1.6rem;font-weight:900;color:var(--gold)">${fmtM(dispComm)}</div></div>
   </div>
   <div style="margin-bottom:14px;">
     <input id="bm-search" type="search" value="${_bmFilter.replace(/"/g,'&quot;')}" oninput="filterBrokerTable(this.value)"
-      placeholder="🔍  Cerca nave, noleggiatore (CHRTR), armatore (OWS)…"
+      placeholder="🔍  Cerca nave, noleggiatore (CHRTR), armatore (OWS), broker…"
       style="width:100%;padding:10px 15px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);font-size:.87rem;outline:none;box-sizing:border-box;font-family:inherit;"
       onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"/>
   </div>
-  <table class="data-table" style="min-width:700px"><thead><tr>`;
+  <table class="data-table" style="min-width:760px"><thead><tr>`;
   cols.forEach(c => {
     const isActive = _bmSortKey === c.key;
     const arrow = isActive ? (_bmSortDir === -1 ? '▼' : '▲') : '⇅';
@@ -1017,17 +1031,19 @@ function _renderBrokerModal() {
   });
   html += '</tr></thead><tbody>';
   if (filtered.length === 0) {
-    html += `<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted);font-size:.9rem;">Nessun risultato per "<strong style="color:var(--gold)">${_bmFilter}</strong>"</td></tr>`;
+    html += `<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted);font-size:.9rem;">Nessun risultato</td></tr>`;
   }
   filtered.forEach(r => {
     const side = r.side||'—';
+    const co = bmCo(r);
     html += `<tr>
       <td style="white-space:nowrap;font-variant-numeric:tabular-nums">${r.date?r.date.toLocaleDateString('it-IT'):'—'}</td>
       <td style="font-weight:700">${r.vsl||'—'}</td>
       <td>${r.chrtr||'—'}</td><td>${r.ows||'—'}</td>
+      <td>${co?`<span style="font-weight:700;color:${BRKR_COLORS[co]||'var(--text)'}">${co}</span>`:'<span style="color:var(--muted2)">—</span>'}</td>
       <td><span class="badge ${side==='C'?'badge-blue':side==='O'?'badge-green':'badge-gold'}">${side}</span></td>
       <td style="font-size:.78rem;color:var(--muted)">${r.office||'—'}</td>
-      <td class="num">${r.minComm?fmtN(r.minComm):'—'}</td>
+      <td class="num">${r.minComm?fmtN(bmShare(r)):'—'}</td>
     </tr>`;
   });
   html += '</tbody></table>';
@@ -1044,14 +1060,9 @@ const _hiddenCards = {};
 function initCardHideButtons() {
   document.querySelectorAll('.card').forEach((card, i) => {
     if (card.dataset.cardId) return;
-    // ID stabile basato sul contenuto
-    const canvas = card.querySelector('canvas');
-    const tbody  = card.querySelector('tbody');
-    const h3     = card.querySelector('h3');
-    const id = canvas ? 'c_' + canvas.id
-             : tbody  ? 'c_' + tbody.id
-             : 'c_' + (h3 ? h3.textContent.trim().substring(0,22).replace(/\W+/g,'_') : i);
+    const id = 'card-' + i;
     card.dataset.cardId = id;
+    const h3 = card.querySelector('h3');
     if (!h3) return;
     const title = (h3.textContent || '').trim().substring(0,28) || ('Grafico ' + (i+1));
     const btn = document.createElement('button');
@@ -1061,29 +1072,10 @@ function initCardHideButtons() {
     btn.onclick = e => { e.stopPropagation(); hideCard(id, title); };
     h3.appendChild(btn);
   });
-  // Assegna ID stabili alle griglie (sezione + indice)
-  document.querySelectorAll('.grid-1,.grid-2,.grid-3').forEach(grid => {
-    if (!grid.dataset.gridId) {
-      const sec = grid.closest('.section-block');
-      const secTitle = sec?.querySelector('.section-title')?.textContent.replace(/\s+/g,' ').trim().substring(0,18) || 'main';
-      const idx = sec ? [...sec.querySelectorAll('.grid-1,.grid-2,.grid-3')].indexOf(grid) : 0;
-      grid.dataset.gridId = secTitle + '_' + idx;
-    }
-  });
   if (typeof Sortable !== 'undefined') {
-    const mainEl = document.getElementById('main');
-    if (mainEl && !mainEl._sectionSortable) {
-      mainEl._sectionSortable = new Sortable(mainEl, {
-        animation: 250, handle: '.section-title',
-        ghostClass: 'sortable-ghost', dragClass: 'sortable-drag',
-        draggable: '.section-block',
-        onEnd: _saveState,
-      });
-    }
     document.querySelectorAll('.grid-1,.grid-2,.grid-3').forEach(grid => {
       if (!grid._sortable) grid._sortable = new Sortable(grid, {
-        animation: 200, handle: 'h3', ghostClass:'sortable-ghost', dragClass:'sortable-drag',
-        onEnd: _saveState,
+        animation: 200, handle: 'h3', ghostClass:'sortable-ghost', dragClass:'sortable-drag'
       });
     });
   }
@@ -1094,13 +1086,6 @@ function hideCard(id, title) {
   if (card) card.style.display = 'none';
   _hiddenCards[id] = title;
   updateHiddenPanel();
-  const section = card && card.closest('.section-block');
-  if (section) {
-    const visible = section.querySelectorAll('.card:not([style*="none"])');
-    const secTitle = section.querySelector('.section-title');
-    if (secTitle && visible.length === 0) secTitle.style.display = 'none';
-  }
-  _saveState();
 }
 
 function restoreCard(id) {
@@ -1108,12 +1093,6 @@ function restoreCard(id) {
   if (card) card.style.display = '';
   delete _hiddenCards[id];
   updateHiddenPanel();
-  const section = card && card.closest('.section-block');
-  if (section) {
-    const secTitle = section.querySelector('.section-title');
-    if (secTitle) secTitle.style.display = '';
-  }
-  _saveState();
 }
 
 function updateHiddenPanel() {
@@ -1126,75 +1105,6 @@ function updateHiddenPanel() {
   panel.innerHTML = keys.map(id =>
     `<div class="sb-chart-row"><span style="flex:1;font-size:.77rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_hiddenCards[id]}</span><button class="sb-restore-btn" onclick="restoreCard('${id}')">↩ mostra</button></div>`
   ).join('');
-}
-
-// ── PERSIST UI STATE ─────────────────────────────────────────────────────────
-const _LS = 'mil_ui_v2';
-
-function _saveState() {
-  try {
-    const state = {
-      hidden: { ..._hiddenCards },
-      cardOrder: {},
-      sectionOrder: [],
-    };
-    document.querySelectorAll('.grid-1,.grid-2,.grid-3').forEach(grid => {
-      const gid = grid.dataset.gridId;
-      if (!gid) return;
-      state.cardOrder[gid] = [...grid.querySelectorAll(':scope > .card[data-card-id]')].map(c => c.dataset.cardId);
-    });
-    state.sectionOrder = [...document.querySelectorAll('#main > .section-block')].map(s => {
-      const t = s.querySelector('.section-title');
-      return t ? t.textContent.replace(/\s+/g,' ').trim() : '';
-    }).filter(Boolean);
-    localStorage.setItem(_LS, JSON.stringify(state));
-  } catch(e) {}
-}
-
-function _restoreState() {
-  try {
-    const raw = localStorage.getItem(_LS);
-    if (!raw) return;
-    const state = JSON.parse(raw);
-
-    if (state.hidden) {
-      Object.entries(state.hidden).forEach(([id, title]) => {
-        const card = document.querySelector(`[data-card-id="${id}"]`);
-        if (card) { card.style.display = 'none'; _hiddenCards[id] = title; }
-      });
-      updateHiddenPanel();
-      document.querySelectorAll('.section-block').forEach(sec => {
-        const vis = sec.querySelectorAll('.card:not([style*="none"])');
-        const t   = sec.querySelector('.section-title');
-        if (t && vis.length === 0) t.style.display = 'none';
-      });
-    }
-
-    if (state.cardOrder) {
-      document.querySelectorAll('.grid-1,.grid-2,.grid-3').forEach(grid => {
-        const gid   = grid.dataset.gridId;
-        const order = gid && state.cardOrder[gid];
-        if (!order) return;
-        order.forEach(cid => {
-          const card = grid.querySelector(`[data-card-id="${cid}"]`);
-          if (card) grid.appendChild(card);
-        });
-      });
-    }
-
-    if (state.sectionOrder && state.sectionOrder.length) {
-      const main = document.getElementById('main');
-      const map  = {};
-      document.querySelectorAll('#main > .section-block').forEach(s => {
-        const t = s.querySelector('.section-title');
-        if (t) map[t.textContent.replace(/\s+/g,' ').trim()] = s;
-      });
-      state.sectionOrder.forEach(key => {
-        const s = map[key];
-        if (s) main.appendChild(s);
-      });
-    }
-  } catch(e) {}
 }
 
 // ── THEME ─────────────────────────────────────────────────────────────────────
@@ -1252,7 +1162,6 @@ async function init() {
     render(data);
     revealCards();
     initCardHideButtons();
-    _restoreState();
     initSidebar(data, gfData);
   } catch(e) {
     document.getElementById('loader').classList.add('hidden');
