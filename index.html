@@ -306,6 +306,9 @@
     <div class="card"><h3><span class="h3-dot"></span>Fixture per Broker</h3><div class="chart-wrap tall"><canvas id="chartBrkrFixYTD"></canvas></div></div>
     <div class="card"><h3><span class="h3-dot"></span>Fixture per Broker per Anno</h3><div class="chart-wrap tall"><canvas id="chartBrkrFixYear"></canvas></div></div>
   </div>
+  <div class="grid-1">
+    <div class="card"><h3><span class="h3-dot"></span>Andamento Annuale per Singolo Broker</h3><div id="brkrYearGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;"></div></div>
+  </div>
   </div>
 
   <!-- ANALISI INDIVIDUALE -->
@@ -783,6 +786,38 @@ function render(d) {
   });
 
   const activeBrkrs = BRKR_CORE.filter(b => d.brkrCount[b] > 0);
+
+  // ── Andamento annuale per singolo broker (mini-grafici) ──
+  const bygEl = document.getElementById('brkrYearGrid');
+  if (bygEl) {
+    bygEl.innerHTML = '';
+    const miniColors = {MPE:'#4f8ff7',LCE:'#f0b429',FGA:'#fb923c',OPE:'#34d399',SDP:'#a78bfa',BEE:'#f87171'};
+    activeBrkrs.forEach(b => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'background:rgba(148,163,184,0.05);border:1px solid var(--border);border-radius:12px;padding:14px;';
+      const lbl = document.createElement('div');
+      lbl.textContent = b;
+      lbl.style.cssText = 'font-weight:800;font-size:0.85rem;margin-bottom:8px;color:' + (miniColors[b]||'#4f8ff7') + ';';
+      const cwrap = document.createElement('div');
+      cwrap.style.cssText = 'position:relative;height:150px;';
+      const cv = document.createElement('canvas');
+      cv.id = 'chartBY_' + b;
+      cwrap.appendChild(cv);
+      wrap.appendChild(lbl); wrap.appendChild(cwrap);
+      bygEl.appendChild(wrap);
+      charts['by_'+b] = new Chart(cv, {
+        type:'bar',
+        data:{ labels: d.allYears.map(String), datasets:[{
+          data: d.allYears.map(y => d.brkrByYear[y][b]||0),
+          backgroundColor: (miniColors[b]||'#4f8ff7')+'cc',
+          borderRadius:6, borderSkipped:false
+        }]},
+        options:{ responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.y+' fixture'}}},
+          scales:{ x:{grid:{display:false}}, y:{grid:{color:GC},beginAtZero:true,ticks:{precision:0}} } }
+      });
+    });
+  }
 
   // Commissione TOTALE per broker ($ prodotti)
   const brkrByComm = [...activeBrkrs].sort((a,b)=>(d.brkrTotComm[b]||0)-(d.brkrTotComm[a]||0));
