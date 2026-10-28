@@ -40,7 +40,7 @@ export async function onRequest(context) {
     const out = new Response(res.body, res);
     out.headers.set('Cache-Control', 'private, no-store');
     out.headers.set('X-Frame-Options', 'DENY');
-    out.headers.set('Referrer-Policy', 'no-referrer');
+    out.headers.set('Referrer-Policy', 'same-origin');
     out.headers.set('X-Content-Type-Options', 'nosniff');
     if ((out.headers.get('Content-Type') || '').includes('text/html')) out.headers.set('Content-Security-Policy', CSP);
     return out;
@@ -129,7 +129,8 @@ function timingSafeEqual(a, b) {
 // stessa origine: Origin uguale, oppure (browser senza Origin) Sec-Fetch-Site same-origin/none
 function sameOrigin(request) {
   const origin = request.headers.get('Origin');
-  if (origin) return origin === new URL(request.url).origin;
+  // Origin 'null' (es. pagine con Referrer-Policy restrittiva): si decide con Sec-Fetch-Site
+  if (origin && origin !== 'null') return origin === new URL(request.url).origin;
   const site = request.headers.get('Sec-Fetch-Site');
   return !site || site === 'same-origin' || site === 'none';
 }
@@ -165,7 +166,7 @@ function loginPage(wrong) {
 </form></body></html>`;
   return new Response(html, {
     status: wrong ? 401 : 200,
-    headers: { ...noStore('text/html; charset=utf-8'), 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer',
+    headers: { ...noStore('text/html; charset=utf-8'), 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'same-origin',
       'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'" },
   });
 }
