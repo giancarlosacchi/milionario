@@ -1,0 +1,8 @@
+# chiavi e segreti: mai nel repository
+service-account*.json
+milionario-*.json
+*.pem
+*.p12
+.env*
+.dev.vars
+.wrangler/

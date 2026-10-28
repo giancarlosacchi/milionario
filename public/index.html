@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js" integrity="sha384-eeLEhtwdMwD3X9y+8P3Cn7Idl/M+w8H4uZqkgD/2eJVkWIN1yKzEj6XegJ9dL3q0" crossorigin="anonymous"></script>
 <style>
   :root{
     --bg:#070b14; --bg2:#0b1120; --card:#101828; --card2:#0d1422;
@@ -356,11 +356,10 @@
 </div><!-- /main -->
 </div><!-- /container -->
 
-<footer>Milionario — Genoa Fixtures Analytics · Dati in tempo reale da Google Sheets</footer>
+<footer>Milionario — Genoa Fixtures Analytics · Accesso riservato</footer>
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-const SHEET_ID = '1D1qVTBN3shujwOkV0eRHrfdwX7mya54ociV0jTHn37w';
 const BRKR_CORE = ['MPE','LCE','FGA','OPE','SDP','BEE'];
 const PAL = ['#4f8ff7','#34d399','#fb923c','#f0b429','#a78bfa','#f87171','#2dd4bf','#60a5fa','#f472b6','#a3e635'];
 const BRKR_COLORS = {MPE:'#4f8ff7',LCE:'#f0b429',FGA:'#fb923c',OPE:'#34d399',SDP:'#a78bfa',BEE:'#f87171'};
@@ -405,26 +404,26 @@ function monthLabel(key){
 function getBrokers(s){ if(!s||s.trim()==='')return[]; return s.split('+').map(b=>b.trim()).filter(Boolean); }
 function normPair(a,b){ return [a,b].sort().join(' + '); }
 
-// ── JSONP FETCH ───────────────────────────────────────────────────────────────
-function fetchSheetJsonp(sheetId, sheetName, opts) {
-  opts = opts || {};
-  return new Promise((resolve, reject) => {
-    const cb = '_gviz_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
-    let url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheetName)}`;
-    if (opts.range) url += `&range=${opts.range}`;
-    const timer = setTimeout(() => {
-      delete window[cb];
-      if (script.parentNode) script.parentNode.removeChild(script);
-      reject(new Error('Timeout: Google Sheets non risponde dopo 15s'));
-    }, 15000);
-    window[cb] = function(resp) {
-      clearTimeout(timer);
-      delete window[cb];
-      if (script.parentNode) script.parentNode.removeChild(script);
-      if (!resp || resp.status !== 'ok') {
-        reject(new Error('Errore Google Sheets: ' + JSON.stringify(resp && resp.errors)));
-        return;
-      }
+// ── FETCH DATI (tramite /api/sheet, protetto da Cloudflare Access) ─────────────
+async function fetchSheet() {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 20000);
+  let resp;
+  try {
+    const r = await fetch('api/sheet', { credentials: 'same-origin', cache: 'no-store', signal: ctrl.signal });
+    if (r.status === 401 || r.redirected) throw new Error('Sessione scaduta: ricarica la pagina per accedere di nuovo.');
+    if (!r.ok) throw new Error('Errore nel caricamento dei dati (' + r.status + ').');
+    resp = await r.json();
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Timeout: il server non risponde dopo 20s');
+    // Sessione Access scaduta: il redirect al login (altra origine) fa fallire la fetch con TypeError.
+    if (e instanceof TypeError) { location.reload(); throw new Error('Sessione scaduta: ricarico la pagina…'); }
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+  if (!resp || resp.status !== 'ok') throw new Error('Errore Google Sheets: ' + JSON.stringify(resp && resp.errors));
+  {
       const cols = resp.table.cols, rows = resp.table.rows;
       const headers = cols.map(c => (c.label || c.id || '').trim());
       const data = [headers];
@@ -448,17 +447,8 @@ function fetchSheetJsonp(sheetId, sheetName, opts) {
         });
         data.push(arr);
       }
-      resolve(data);
-    };
-    const script = document.createElement('script');
-    script.onerror = () => {
-      clearTimeout(timer);
-      delete window[cb];
-      reject(new Error('Impossibile raggiungere Google Sheets. Verifica che il foglio sia condiviso pubblicamente (Condividi → Chiunque abbia il link → Visualizzatore).'));
-    };
-    script.src = url;
-    document.head.appendChild(script);
-  });
+      return data;
+  }
 }
 
 function parseGF(rows) {
@@ -1287,17 +1277,11 @@ async function init() {
     document.getElementById('loader').classList.add('hidden');
     document.getElementById('error-box').classList.add('visible');
     document.getElementById('error-detail').textContent =
-      'Stai aprendo il file dalla cartella locale (file://). Il dashboard non può caricare dati da Google Sheets in questa modalità.';
-    document.getElementById('error-box').innerHTML += `<div style="margin-top:16px;padding:16px;background:rgba(52,211,153,.08);border:1px solid var(--green);border-radius:12px;text-align:center;">
-      <p style="color:var(--green);font-weight:800;font-size:1.05rem;margin-bottom:8px;">✅ Apri il link web invece:</p>
-      <a href="https://giancarlosacchi.github.io/milionario/" target="_blank"
-         style="color:var(--gold);font-size:1.1rem;font-weight:800;word-break:break-all;text-decoration:underline;">
-        https://giancarlosacchi.github.io/milionario/
-      </a></div>`;
+      'Stai aprendo il file dalla cartella locale (file://). Il dashboard funziona solo dal suo indirizzo web protetto.';
     return;
   }
   try {
-    const gfRows = await fetchSheetJsonp(SHEET_ID, 'GENOA FIXTURES', { range: 'A2:Z' });
+    const gfRows = await fetchSheet();
     const gfData = parseGF(gfRows);
     window._gfData = gfData;
     const data = compute(gfData);
