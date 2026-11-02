@@ -60,3 +60,10 @@ Note:
 - Nella cronologia del repository resta il vecchio ID del foglio: dopo i passi 1 e 2 non serve più a nulla.
   I dati letti mentre il foglio era pubblico vanno considerati già visti da chi aveva il link.
 - L'app GitHub "Cloudflare Workers and Pages" ha accesso solo al repository `milionario`.
+
+## Indirizzo GitHub
+
+`https://giancarlosacchi.github.io/milionario/` è riattivo (GitHub Pages dalla radice di `main`), ma serve solo
+`index.html` della radice, che rimanda subito a `https://milionario-1nh.pages.dev/` (pagina della password).
+Non contiene dati: puoi dare quel link a chi vuoi insieme alla password. Il repository resta pubblico perché
+GitHub Pages gratis lo richiede; nel codice non ci sono password, chiavi né dati.
