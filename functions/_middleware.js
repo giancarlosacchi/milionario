@@ -13,7 +13,7 @@ const fails = new Map();             // ip -> { n, until }
 
 const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " +
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; " +
-  "connect-src 'self' WSS_SELF; frame-ancestors 'none'; form-action 'self'; base-uri 'none'";
+  "connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'none'";
 
 export async function onRequest(context) {
   const { request, env, next } = context;
@@ -37,13 +37,12 @@ export async function onRequest(context) {
 
   if (await validSession(request, env)) {
     const res = await next();
-    if (res.status === 101) return res; // WebSocket (/api/presence): la risposta va passata così com'è
     const out = new Response(res.body, res);
     out.headers.set('Cache-Control', 'private, no-store');
     out.headers.set('X-Frame-Options', 'DENY');
     out.headers.set('Referrer-Policy', 'same-origin');
     out.headers.set('X-Content-Type-Options', 'nosniff');
-    if ((out.headers.get('Content-Type') || '').includes('text/html')) out.headers.set('Content-Security-Policy', CSP.replace('WSS_SELF', `wss://${url.host}`));
+    if ((out.headers.get('Content-Type') || '').includes('text/html')) out.headers.set('Content-Security-Policy', CSP);
     return out;
   }
 
