@@ -334,10 +334,11 @@ button.row:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
 .yr{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding-bottom:14px;position:relative;z-index:1}
 .yrl{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .yr .seg button{padding:8px 20px;font-size:15px}
+.sx3{background:var(--violet)}.splitl{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}
 .tri{display:flex;flex-direction:column;gap:12px}.duo{display:flex;flex-wrap:wrap;gap:8px 30px}
 .tl{display:block;font-family:var(--display);font-stretch:112%;font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-bottom:3px}
 .mid{font-family:var(--display);font-stretch:118%;font-weight:900;font-size:clamp(26px,10.5cqw,60px);line-height:.95;letter-spacing:-.035em;white-space:nowrap}
-.hero .big{font-size:clamp(40px,17cqw,112px)}.hero .biglab{margin-top:8px}
+
 .bar{padding-top:14px}.top{padding-block:4px 0}.bar .yrl{margin-right:-4px}.bar .who{margin-left:0}
 /* ---- additions for this page: year switch, long month strip, status legend, PBI block ---- */
 .months{grid-template-columns:repeat(var(--n,12),minmax(0,1fr))}
@@ -399,6 +400,11 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
     <button data-y="2025" aria-pressed="false">2025</button>
     <button data-y="2026" aria-pressed="false">2026</button>
   </div>
+  <div class="seg" id="scope" role="group" aria-label="Dry o Sale and Purchase"><span class="thumb"></span>
+    <button data-sc="dry" aria-pressed="true">Dry</button>
+    <button data-sc="sp" aria-pressed="false">S&amp;P</button>
+    <button data-sc="all" aria-pressed="false">Entrambi</button>
+  </div>
   <label class="qw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
     <input id="q" type="search" placeholder="Cerca un broker, una nave, un armatore o un noleggiatore" aria-label="Cerca un broker, una nave o un cliente"></label>
   <div class="seg" id="metric" role="group" aria-label="Misura"><span class="thumb"></span>
@@ -407,15 +413,13 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
     <button data-m="p" aria-pressed="false">Fatturato</button>
   </div>
   <div class="who" id="who" aria-label="Chi c'è sul sito"></div>
-  <span class="hint" id="hint">Oppure clicca un mese, un broker o una barra per filtrare.</span>
   <div class="chips" id="chips"></div>
 </div></div>
 
 <header class="top"><div class="wrap bento">
   <section class="tile hero s5">
     <p class="eyebrow">Fissati Genova</p>
-    <div class="tri"><div class="duo"><div><span class="tl">Dry</span><div class="mid" id="big">$0</div></div><div><span class="tl">S&amp;P</span><div class="mid" id="bigsp">$0</div></div></div>
-      <div><span class="tl">Dry + S&amp;P</span><div class="big" id="bigtot">$0</div></div><p class="biglab" id="biglab"></p></div>
+    <div><div class="big" id="big">$0</div><p class="biglab" id="biglab"></p></div>
     <p class="src" id="src">Foglio «CHI VUOLE ESSERE MILIONARIO?»</p>
   </section>
   <section class="tile mtile on-color s7 c-month">
@@ -494,7 +498,7 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
     <div class="tw"><table class="fx"><thead><tr><th>MOA</th><th>Nave</th><th>Venditore</th><th>Compratore</th><th class="r">Prezzo</th><th class="r">Comm.</th><th>Co-broker</th><th class="r">Quota Genova</th><th>Fattura</th></tr></thead><tbody id="sp"></tbody></table></div>
   </section>
  </div>
- <p class="note">Fonte: foglio Google «CHI VUOLE ESSERE MILIONARIO?», schede GENOA FIXTURES, FATTURE, PBI e GENOA S&amp;P, lette in diretta: la pagina si aggiorna da sola ogni minuto. Commissione = colonna «MIN. COMM», cioè la quota stimata di Genova (rata × quantità × 1,25% × split). Quando un fissato ha più broker la commissione è divisa in parti uguali; nel conteggio ogni broker conta 1 per ogni fissato a cui ha partecipato. Fatturato = quota Genova delle fatture già emesse (somma fatture × split per i fissati fatturati da Genova; importo fatturato all'ufficio estero per gli altri). Può superare la commissione stimata quando il noleggio dura più del previsto. In alto, Dry è il totale dei fissati, S&P la quota Genova delle compravendite (segue solo periodo, mese e broker) e il terzo numero è la somma. I fissati fatturati da Dubai sono contati nelle commissioni ma tenuti fuori dalla fatturazione. Time charter o viaggio è dedotto dalla rata (da 1.000 $ in su = noleggio a giornata). Sono contati come COA i fissati con quantità sopra 80.000 tonnellate. Gli incassi esistono solo come totali nella scheda PBI. L'ultimo mese è parziale.</p>
+ <p class="note">Fonte: foglio Google «CHI VUOLE ESSERE MILIONARIO?», schede GENOA FIXTURES, FATTURE, PBI e GENOA S&amp;P, lette in diretta: la pagina si aggiorna da sola ogni minuto. Commissione = colonna «MIN. COMM», cioè la quota stimata di Genova (rata × quantità × 1,25% × split). Quando un fissato ha più broker la commissione è divisa in parti uguali; nel conteggio ogni broker conta 1 per ogni fissato a cui ha partecipato. Fatturato = quota Genova delle fatture già emesse (somma fatture × split per i fissati fatturati da Genova; importo fatturato all'ufficio estero per gli altri). Può superare la commissione stimata quando il noleggio dura più del previsto. Con il selettore Dry / S&P / Entrambi la pagina mostra solo i fissati, solo le compravendite o tutti e due: una compravendita conta come un fissato, con il venditore al posto dell'armatore, il compratore al posto del noleggiatore e la quota Genova come commissione. I fissati fatturati da Dubai sono contati nelle commissioni ma tenuti fuori dalla fatturazione. Time charter o viaggio è dedotto dalla rata (da 1.000 $ in su = noleggio a giornata). Sono contati come COA i fissati con quantità sopra 80.000 tonnellate. Gli incassi esistono solo come totali nella scheda PBI. L'ultimo mese è parziale.</p>
  <form method="POST" action="/logout" class="out"><button type="submit" class="more">Esci</button> <a href="vecchio.html">Sito precedente</a></form>
 </main>
 <div id="tip"></div>
@@ -595,14 +599,21 @@ const MONTHS = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov
 const IDX = {type:3, side:4, office:5, partner:6, status:7, ow:9, ch:10};
 const DIMNAME = {month:'Mese', office:'Fattura', partner:'Diviso con', side:'Commissione da', type:'Tipo', status:'Stato', broker:'Broker', ow:'Armatore', ch:'Noleggiatore'};
 const F = {month:new Set, office:new Set, partner:new Set, side:new Set, type:new Set, status:new Set, broker:new Set, ow:new Set, ch:new Set};
-let M = 'c', Q = '', Y = 0, searchBroker = false, side = 'ow', clN = 12, fxN = 50, sortBy = 'd';
+let M = 'c', Q = '', Y = 0, SC = 'dry', SPT = -1, searchBroker = false, side = 'ow', clN = 12, fxN = 50, sortBy = 'd';
 const MOTION = !matchMedia('(prefers-reduced-motion: reduce)').matches, EASE = 'cubic-bezier(.22,1,.36,1)';
 let D = null, R = [], YM = [], LAST = 0, bWords = [];
 const dimList = dim => dim === 'month' ? YM : dim === 'broker' ? D.broker : dim === 'type' ? D.type : D[dim];
 // (re)load a dataset: active filters are carried over by name, because positions can shift when the sheet changes
 function setData(d) {
   const keep = {}; if (D) for (const k in F) keep[k] = [...F[k]].map(v => dimList(k)[v]);
-  D = d; R = D.rows; YM = [];
+  D = d; YM = [];
+  // each sale & purchase deal becomes a row like a fixture: seller as owner, buyer as charterer, Genoa's share as commission
+  if (D.type.indexOf('S&P') < 0) D.type.push('S&P'); SPT = D.type.indexOf('S&P');
+  const ix = (l, v) => { let i = l.indexOf(v); if (i < 0) { l.push(v); i = l.length - 1; } return i; };
+  const spRows = D.sp.map((x, i) => { const b = ix(D.broker, x[9]); if (D.bname[b] === undefined) D.bname[b] = x[9];
+    return [100000 + i, x[0], x[3], SPT, D.side.indexOf('Non indicato'), ix(D.office, 'Genova'), ix(D.partner, x[8] > 0 ? 'Co-broker' : 'Solo Genova'), x[11] ? 0 : 2, [b], ix(D.ow, x[1]), ix(D.ch, x[2]),
+      x[10], x[11] ? x[10] : 0, x[11] ? 0 : x[10], null, null, null, 1, x[11], x[6]]; });
+  R = D.rows.concat(spRows);
   if (R.length) { const a = R.reduce((m, r) => r[1] < m ? r[1] : m, '9'), z = R.reduce((m, r) => r[1] > m ? r[1] : m, '0');
     let y = +a.slice(0, 4), m = +a.slice(5, 7); const ye = +z.slice(0, 4), me = +z.slice(5, 7);
     while (y < ye || (y === ye && m <= me)) { YM.push(y * 100 + m); if (++m > 12) { m = 1; y++; } } }
@@ -666,8 +677,9 @@ function keyed(el, items, keyFn, make, upd) {
 }
 const grow = (bar, pct, isNew) => { if (isNew && MOTION) requestAnimationFrame(() => requestAnimationFrame(() => bar.style.width = pct + '%')); else bar.style.width = pct + '%'; };
 
+const inScope = r => SC === 'all' || (r[3] === SPT) === (SC === 'sp');
 function pass(r, skip) {
-  if (Y && r.y !== Y) return false;
+  if (!inScope(r) || (Y && r.y !== Y)) return false;
   for (const k in F) { const s = F[k]; if (!s.size || k === skip) continue;
     if (k === 'month') { if (!s.has(r.mo)) return false; }
     else if (k === 'broker') { if (!r.bs.some(b => s.has(b))) return false; }
@@ -675,11 +687,11 @@ function pass(r, skip) {
   return !Q || r.hay.includes(Q);
 }
 const rowsFor = skip => R.filter(r => pass(r, skip));
-const yearRows = () => Y ? R.filter(r => r.y === Y) : R;
+const yearRows = () => R.filter(r => inScope(r) && (!Y || r.y === Y));
 // brokers are one at a time: picking another replaces the current one
 function toggle(dim, v) { const s = F[dim]; if (s.has(v)) s.delete(v); else { if (dim === 'broker') s.clear(); s.add(v); } fxN = 50; render(); }
 const ymLabel = i => MONTHS[YM[i] % 100 - 1] + ' ' + Math.floor(YM[i] / 100);
-const TNAME = ['Time charter', 'Viaggio', 'COA'], TI = [0, 1, 2];
+const TNAME = ['Time charter', 'Viaggio', 'COA', 'S&P'], TI = [0, 1, 2, 3], TCLS = ['s0', 's1', 's2', 'sx3'];
 const labelOf = (dim, v) => dim === 'month' ? ymLabel(v) : dim === 'broker' ? D.broker[v] + ' · ' + D.bname[v] : dim === 'type' ? TNAME[v] : D[dim][v];
 
 function facet(el, dim, limit) {
@@ -716,12 +728,13 @@ function months() {
 }
 
 function typeSplit() {
-  const rows = rowsFor('type'), a = [0, 0, 0], n = [0, 0, 0]; rows.forEach(r => { a[r[3]] += Math.max(0, val(r)); n[r[3]]++; });
-  const tot = Math.max(1, a[0] + a[1] + a[2]), sp = $('split'), sl = $('splitl');
-  if (!sp.children.length) { sp.innerHTML = TI.map(i => `<button class="s${i}" data-dim="type" data-v="${i}" aria-label="${TNAME[i]}"></button>`).join('');
-    sl.innerHTML = TI.map(i => `<button data-dim="type" data-v="${i}"><small><i class="s${i}"></i>${TNAME[i]}</small><b></b><small></small></button>`).join(''); }
+  const rows = rowsFor('type'), a = [0, 0, 0, 0], n = [0, 0, 0, 0]; rows.forEach(r => { a[r[3]] += Math.max(0, val(r)); n[r[3]]++; });
+  const tot = Math.max(1, a[0] + a[1] + a[2] + a[3]), sp = $('split'), sl = $('splitl');
+  if (!sp.children.length) { sp.innerHTML = TI.map(i => `<button class="${TCLS[i]}" data-dim="type" data-v="${i}" aria-label="${TNAME[i]}"></button>`).join('');
+    sl.innerHTML = TI.map(i => `<button data-dim="type" data-v="${i}"><small><i class="${TCLS[i]}"></i>${TNAME[i]}</small><b></b><small></small></button>`).join(''); }
   sp.classList.toggle('tdim', F.type.size > 0); sl.classList.toggle('tdim', F.type.size > 0);
-  TI.forEach(i => { const on = F.type.has(i), tipv = `<b>${TNAME[i]}</b><br>${nf.format(n[i])} fissati${M !== 'n' ? '<br>' + full(a[i]) + ' ' + mLabel() : ''}`;
+  TI.forEach(i => { sp.children[i].hidden = sl.children[i].hidden = !n[i] && !F.type.has(i);
+    const on = F.type.has(i), tipv = `<b>${TNAME[i]}</b><br>${nf.format(n[i])} fissati${M !== 'n' ? '<br>' + full(a[i]) + ' ' + mLabel() : ''}`;
     sp.children[i].style.flexGrow = a[i] / tot; sp.children[i].setAttribute('aria-pressed', on); sp.children[i].dataset.tip = tipv;
     const l = sl.children[i]; l.setAttribute('aria-pressed', on); l.dataset.tip = tipv; tw(l.children[1], a[i], fmt, M); l.children[2].textContent = Math.round(a[i] / tot * 100) + '% · ' + nf.format(n[i]) + ' fix'; });
 }
@@ -777,11 +790,8 @@ function summary() {
   const rows = rowsFor(), yr = yearRows(); let c = 0, p = 0, o = 0, du = 0; const bset = new Set, debt = new Map;
   rows.forEach(r => { const w = wOf(r); c += r[11] * w; p += r[12] * w; o += r[13] * w; if (r[7] === 3) du += r[11] * w; r.bs.forEach(b => bset.add(b)); if (r[13] > 0) debt.set(r[9], (debt.get(r[9]) || 0) + r[13] * w); });
   const n = rows.length, all = n === yr.length;
-  // the three headline figures: dry cargo, sale & purchase, and both. S&P follows the period, month and broker filters only
-  const spr = D.sp.filter(s => (!Y || +s[0].slice(0, 4) === Y) && (!F.month.size || F.month.has(YM.indexOf(+s[0].slice(0, 4) * 100 + +s[0].slice(5, 7)))) && (!F.broker.size || [...F.broker].some(b => D.broker[b] === s[9])));
-  const dryv = M === 'n' ? n : M === 'c' ? c : p, spv = M === 'n' ? spr.length : spr.reduce((a, s) => a + (M === 'p' && !s[11] ? 0 : s[10]), 0), hf = M === 'n' ? int : usd;
-  tw($('big'), dryv, hf, M); tw($('bigsp'), spv, hf, M); tw($('bigtot'), dryv + spv, hf, M);
-  $('biglab').innerHTML = (M === 'n' ? '<b>fissati chiusi</b>' : M === 'c' ? '<b>di commissioni</b>' : '<b>già fatturati</b>') + (all ? ` ${yLabel()}, quota dell'ufficio di Genova.` : F.broker.size ? ` · quota personale di ${[...F.broker].slice(0, 3).map(b => esc(D.bname[b])).join(', ')}${F.broker.size > 3 ? '…' : ''}, su ${nf.format(n)} fissati.` : ` nella selezione: ${(n / Math.max(1, yr.length) * 100).toFixed(1).replace('.', ',')}% dei fissati ${Y ? "dell'anno" : 'totali'}.`);
+  tw($('big'), M === 'n' ? n : M === 'c' ? c : p, M === 'n' ? int : usd, M);
+  $('biglab').innerHTML = (M === 'n' ? '<b>fissati chiusi</b>' : M === 'c' ? '<b>di commissioni</b>' : '<b>già fatturati</b>') + (all ? ` ${yLabel()}${SC === 'sp' ? ', Sale & Purchase' : SC === 'all' ? ', dry più S&P' : ''}, quota dell'ufficio di Genova.` : F.broker.size ? ` · quota personale di ${[...F.broker].slice(0, 3).map(b => esc(D.bname[b])).join(', ')}${F.broker.size > 3 ? '…' : ''}, su ${nf.format(n)} fissati.` : ` nella selezione: ${(n / Math.max(1, yr.length) * 100).toFixed(1).replace('.', ',')}% dei fissati ${Y ? "dell'anno" : 'totali'}.`);
   const base = Math.max(0, c - du);
   const k = [[n, int, 'n', (all ? (Y ? 'tutto il ' + Y : since()) : 'su ' + nf.format(yr.length)) + ' · ' + nf.format(bset.size) + ' broker'],
     [p, usd, 'u', base > 0 ? Math.round(p / base * 100) + '% delle commissioni, Dubai escluso' : ''], [o, usd, 'u', 'quota Genova ancora da emettere']];
@@ -823,7 +833,7 @@ function chips() {
       b.className = 'chip c-' + x.dim; if (x.q) b.dataset.clearq = 1; else { b.dataset.dim = x.dim; b.dataset.v = x.v; }
       b.setAttribute('aria-label', 'Togli filtro ' + x.lab); b.innerHTML = `<i>${x.name}</i><span></span><b>×</b>`; return b; },
     (b, x) => { if (!x.reset) b.children[1].textContent = x.lab; });
-  delete $('chips').dataset.empty; $('hint').hidden = items.length > 0;
+  delete $('chips').dataset.empty;
 }
 
 /* ---- written profile of a single broker, from all their fixtures in the selected period ---- */
@@ -839,7 +849,7 @@ function profileOf(b) {
   const pct = x => Math.round(x / n * 100) + '%';
   const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' e ' + a[a.length - 1];
   const top = (f, k) => { const m = new Map; rows.forEach(r => { const v = f(r); if (v !== 'n/d' && v !== 'Non indicato') m.set(v, (m.get(v) || 0) + 1); }); return [...m].sort((x, y) => y[1] - x[1]).slice(0, k); };
-  let c = 0, inv = 0, rem = 0, sh = 0, solo = 0, durS = 0, durN = 0; const ty = [0, 0, 0], mo = new Map, co = new Map; let best = rows[0];
+  let c = 0, inv = 0, rem = 0, sh = 0, solo = 0, durS = 0, durN = 0; const ty = [0, 0, 0, 0], mo = new Map, co = new Map; let best = rows[0];
   rows.forEach(r => { const w = r.sh; c += r[11] * w; inv += r[12] * w; rem += r[13] * w; sh += w; ty[r[3]]++; mo.set(r.mo, (mo.get(r.mo) || 0) + r[11] * w);
     if (r.bs.length === 1) solo++; else r.bs.forEach(x => { if (x !== b) co.set(x, (co.get(x) || 0) + 1); });
     if (r[3] === 0 && r[15]) { durS += r[15]; durN++; } if (r[11] * w > best[11] * best.sh) best = r; });
@@ -876,7 +886,7 @@ function sandp() {
   let tot = 0; $('sp').innerHTML = D.sp.map(s => { tot += s[10]; return `<tr><td>${s[0].slice(8)}/${s[0].slice(5, 7)}/${s[0].slice(2, 4)}</td><td><b>${esc(s[3])}</b></td><td>${esc(s[1])}</td><td>${esc(s[2])}</td>
     <td class="r">${nf.format(s[4])}</td><td class="r">${nf.format(s[6])}<small>${nf2.format(s[5] * 100)}%</small></td><td>${esc(s[7])}<small>${s[8] ? 'gli spettano ' + nf.format(s[8]) : ''}</small></td>
     <td class="r"><b>${nf.format(s[10])}</b><small>${esc(s[9])}</small></td><td><span class="tag t${s[11] ? 0 : 2}">${s[11] ? 'Fatturato' : 'Da fatturare'}</span><small class="inv">${esc(s[11])}</small></td></tr>`; }).join('');
-  $('spnote').textContent = `${D.sp.length} compravendite · ${full(tot)} di quota Genova · contate in alto nel totale S&P`;
+  $('spnote').textContent = `${D.sp.length} compravendite · ${full(tot)} di quota Genova · per includerle nei grafici scegli S&P o Entrambi in alto`;
 }
 
 function render() {
@@ -894,6 +904,7 @@ document.addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t) return;
   if (t.dataset.dim) { if (t.dataset.dim === 'broker' && searchBroker) { searchBroker = false; $('q').value = ''; } return toggle(t.dataset.dim, +t.dataset.v); }
   if (t.dataset.y) { Y = +t.dataset.y; F.month.clear(); fxN = 50; press($('year'), t); return render(); }
+  if (t.dataset.sc) { SC = t.dataset.sc; fxN = 50; press($('scope'), t); return render(); }
   if (t.dataset.m) { M = t.dataset.m; press($('metric'), t); return render(); }
   if (t.dataset.s) { side = t.dataset.s; clN = 12; press($('side'), t); return render(); }
   if (t.dataset.clearq) { Q = ''; $('q').value = ''; return render(); }
