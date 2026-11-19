@@ -5,7 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>Fissati Genova</title>
+<!-- il titolo usa lettere Unicode in grassetto senza grazie: è l'unico modo per avere il grassetto nella scheda del browser -->
+<title>𝗠𝗜𝗟𝗜𝗢𝗡𝗔𝗥𝗜𝗢</title>
+<link rel="icon" id="fav" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23f5b301' stroke='%23b97e00' stroke-width='4'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='40' fill='%233b2a00'%3E$%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500..800&family=DM+Sans:wght@400..700&display=swap">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 
@@ -493,6 +495,19 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
 <form class="namebox" id="namebox" hidden><b>Come ti chiami?</b><span>Gli altri vedranno il tuo nome accanto al tuo puntatore.</span>
   <input id="nm" type="text" maxlength="24" placeholder="Nome o sigla" autocomplete="nickname" aria-label="Il tuo nome"><button type="submit">Entra</button></form>
 
+<script>
+/* icona della scheda: una moneta col dollaro che dondola piano (ridisegnata su canvas, perché Chrome non anima le GIF nelle schede) */
+(() => { const link = document.getElementById('fav'), c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); if (!g || !link) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let t = 0;
+  function draw() { t += .16; const tilt = Math.sin(t) * .22, bob = Math.sin(t * 2) * 2.5, squash = .86 + Math.cos(t) * .14;
+    g.clearRect(0, 0, 64, 64); g.save(); g.translate(32, 32 + bob); g.rotate(tilt); g.scale(squash, 1);
+    g.beginPath(); g.arc(0, 0, 26, 0, 7); g.fillStyle = '#f5b301'; g.fill(); g.lineWidth = 4; g.strokeStyle = '#b97e00'; g.stroke();
+    g.beginPath(); g.arc(-8, -9, 9, 0, 7); g.fillStyle = 'rgba(255,255,255,.28)'; g.fill();
+    g.fillStyle = '#3b2a00'; g.font = '700 38px Helvetica, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('$', 0, 2); g.restore();
+    try { link.href = c.toDataURL('image/png'); } catch {} }
+  setInterval(draw, 110); })();
+</script>
 <script>
 /* ---- turns the raw sheet ranges from /api/data into the dataset the page uses ---- */
 function buildData(vr) {
