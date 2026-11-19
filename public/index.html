@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <!-- il titolo usa lettere Unicode in grassetto senza grazie: è l'unico modo per avere il grassetto nella scheda del browser -->
 <title>𝗠𝗜𝗟𝗜𝗢𝗡𝗔𝗥𝗜𝗢</title>
-<link rel="icon" id="fav" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23f5b301' stroke='%23b97e00' stroke-width='4'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='40' fill='%233b2a00'%3E$%3C/text%3E%3C/svg%3E">
+<link rel="icon" id="fav" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f5b301' stroke='%23b97e00' stroke-width='3'/%3E%3Ctext x='32' y='49' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='48' fill='%233b2a00'%3E$%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500..800&family=DM+Sans:wght@400..700&display=swap">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 
@@ -500,10 +500,10 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
    (ridisegnata su canvas, perché Chrome non anima le GIF nelle schede) */
 (() => { const link = document.getElementById('fav'), c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); if (!g || !link) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const REST = 2400, SPIN = 1100, R = 28, ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const REST = 1600, SPIN = 2200, R = 31.5, ease = x => (1 - Math.cos(Math.PI * x)) / 2;
   function coin(sx, lift, glint) {
-    g.clearRect(0, 0, 64, 64); g.save(); g.translate(32, 33 - lift);
-    const w = Math.max(.06, Math.abs(sx)), edge = (1 - w) * 7;
+    g.clearRect(0, 0, 64, 64); g.save(); g.translate(32, 32 - lift);
+    const w = Math.max(.06, Math.abs(sx)), edge = (1 - w) * 6;
     // bordo della moneta, visibile quando è di taglio
     g.fillStyle = '#a86f00'; g.beginPath(); g.ellipse(-edge / 2, 0, R * w + edge / 2, R, 0, 0, 7); g.fill();
     g.beginPath(); g.ellipse(edge / 2, 0, R * w + edge / 2, R, 0, 0, 7); g.fill();
@@ -513,15 +513,15 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
     g.save(); g.clip();
     if (glint >= 0) { const x = (glint * 2 - 1) * (R + 16); g.rotate(.5); g.fillStyle = 'rgba(255,255,255,.75)'; g.fillRect(x - 5, -R * 2, 10, R * 4); g.rotate(-.5); }
     g.restore();
-    g.lineWidth = 3; g.strokeStyle = '#b97e00'; g.beginPath(); g.ellipse(0, 0, Math.max(1, R * w - 3.5), R - 3.5, 0, 0, 7); g.stroke();
-    if (w > .18) { g.scale(w, 1); g.fillStyle = '#4a3400'; g.font = '800 40px Helvetica, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('$', 0, 3); }
+    g.lineWidth = 2.5; g.strokeStyle = '#b97e00'; g.beginPath(); g.ellipse(0, 0, Math.max(1, R * w - 3), R - 3, 0, 0, 7); g.stroke();
+    if (w > .18) { g.scale(w, 1); g.fillStyle = '#4a3400'; g.font = '800 48px Helvetica, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('$', 0, 3.5); }
     g.restore();
     try { link.href = c.toDataURL('image/png'); } catch {} }
   const t0 = performance.now(); let lastRest = -1;
   setInterval(() => { const t = (performance.now() - t0) % (REST + SPIN);
     if (t < REST) { // ferma, con un riflesso che passa una volta
-      const gl = t > 700 && t < 1300 ? (t - 700) / 600 : -1, key = gl < 0 ? 0 : Math.round(gl * 12) + 1; if (key === lastRest) return; lastRest = key; coin(1, 0, gl); }
-    else { lastRest = -1; const p = ease((t - REST) / SPIN); coin(Math.cos(p * Math.PI * 2), Math.sin(p * Math.PI) * 4, -1); } }, 45); })();
+      const gl = t > 400 && t < 1200 ? (t - 400) / 800 : -1, key = gl < 0 ? 0 : Math.round(gl * 24) + 1; if (key === lastRest) return; lastRest = key; coin(1, 0, gl); }
+    else { lastRest = -1; const p = ease((t - REST) / SPIN); coin(Math.cos(p * Math.PI * 2), 0, -1); } }, 33); })();
 </script>
 <script>
 /* ---- turns the raw sheet ranges from /api/data into the dataset the page uses ---- */
