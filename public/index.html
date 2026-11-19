@@ -498,7 +498,7 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
     <div class="tw"><table class="fx"><thead><tr><th>MOA</th><th>Nave</th><th>Venditore</th><th>Compratore</th><th class="r">Prezzo</th><th class="r">Comm.</th><th>Co-broker</th><th class="r">Quota Genova</th><th>Fattura</th></tr></thead><tbody id="sp"></tbody></table></div>
   </section>
  </div>
- <p class="note">Fonte: foglio Google «CHI VUOLE ESSERE MILIONARIO?», schede GENOA FIXTURES, FATTURE, PBI e GENOA S&amp;P, lette in diretta: la pagina si aggiorna da sola ogni minuto. Commissione = colonna «MIN. COMM», cioè la quota stimata di Genova (rata × quantità × 1,25% × split). Quando un fissato ha più broker la commissione è divisa in parti uguali; nel conteggio ogni broker conta 1 per ogni fissato a cui ha partecipato. Fatturato = quota Genova delle fatture già emesse (somma fatture × split per i fissati fatturati da Genova; importo fatturato all'ufficio estero per gli altri). Può superare la commissione stimata quando il noleggio dura più del previsto. Con il selettore Dry / S&P / Entrambi la pagina mostra solo i fissati, solo le compravendite o tutti e due: una compravendita conta come un fissato, con il venditore al posto dell'armatore, il compratore al posto del noleggiatore e la quota Genova come commissione. I fissati fatturati da Dubai sono contati nelle commissioni ma tenuti fuori dalla fatturazione. Time charter o viaggio è dedotto dalla rata (da 1.000 $ in su = noleggio a giornata). Sono contati come COA i fissati con quantità sopra 80.000 tonnellate. Gli incassi esistono solo come totali nella scheda PBI. L'ultimo mese è parziale.</p>
+ <p class="note">Fonte: foglio Google «CHI VUOLE ESSERE MILIONARIO?», schede GENOA FIXTURES, FATTURE, PBI e GENOA S&amp;P, lette in diretta: la pagina si aggiorna da sola ogni minuto. Commissione = finché un fissato non è fatturato vale la colonna «MIN. COMM», cioè la quota stimata di Genova (rata × quantità × 1,25% × split); quando è fatturato del tutto vale quanto fatturato davvero; quando è fatturato in parte vale il fatturato finora più il residuo atteso. Nella tabella la stima originale resta scritta sotto. Le righe del foglio identiche e consecutive (stessa data, nave, rata e quantità) sono un fissato unico: a ogni broker va la quota scritta sulla sua riga. Se più broker stanno sulla stessa riga, quella quota è divisa in parti uguali; nel conteggio ogni broker conta 1 per ogni fissato a cui ha partecipato. Fatturato = quota Genova delle fatture già emesse (somma fatture × split per i fissati fatturati da Genova; importo fatturato all'ufficio estero per gli altri). Può superare la commissione stimata quando il noleggio dura più del previsto. Con il selettore Dry / S&P / Entrambi la pagina mostra solo i fissati, solo le compravendite o tutti e due: una compravendita conta come un fissato, con il venditore al posto dell'armatore, il compratore al posto del noleggiatore e la quota Genova come commissione. I fissati fatturati da Dubai sono contati nelle commissioni ma tenuti fuori dalla fatturazione. Time charter o viaggio è dedotto dalla rata (da 1.000 $ in su = noleggio a giornata). Sono contati come COA i fissati con quantità sopra 80.000 tonnellate. Gli incassi esistono solo come totali nella scheda PBI. L'ultimo mese è parziale.</p>
  <form method="POST" action="/logout" class="out"><button type="submit" class="more">Esci</button> <a href="vecchio.html">Sito precedente</a></form>
 </main>
 <div id="tip"></div>
@@ -547,39 +547,46 @@ function buildData(vr) {
   const PAR = {LDN:'Londra', GVA:'Ginevra', GENEVA:'Ginevra', ATH:'Atene', DBX:'Dubai', DUBAI:'Dubai', CPH:'Copenaghen', DK:'Copenaghen', BEIJING:'Pechino', OSLO:'Oslo', NORWAY:'Oslo', MIA:'Miami', SPORE:'Singapore', 'OMNIA GR':'Omnia'};
   const SIDE = {O:'Armatore', C:'Noleggiatore', 'O+C':'Entrambi'};
   const D = {office:[], partner:['Solo Genova'], side:['Armatore', 'Noleggiatore', 'Entrambi', 'Non indicato'], type:['TC', 'VC', 'COA'], status:['Fatturato', 'Parziale', 'Da fatturare', 'Dubai'], broker:[], ow:[], ch:[], rows:[]};
-  let prev = null; // previous fixture: cells merged across two rows come back empty on the second one
-  fx.forEach((g, i) => {
-    if (!num(g[0])) { prev = null; return; }
-    const f = ft[i] || [], r = i + 3, date = iso(g[0]), vessel = clean(g[3]);
-    const twin = prev && prev.date === date && prev.vessel === vessel;
-    const c = num(g[8]) ? g[8] : 0, rate = g[4], qty = g[6], bb = g[5], split = g[7];
-    let t = num(rate) && rate >= 1000 ? 0 : 1; if (t === 1 && num(qty) && qty > 80000) t = 2;
-    let k = g[10], l = g[11], sd = SIDE[g[19]] || SIDE[g[18]];
-    if (twin && blank(k)) k = prev.k;
-    if (twin && blank(l) && split !== 1) l = prev.l;
-    if (twin && !sd) sd = prev.sd;
-    const office = blank(k) ? 'Non indicato' : OFF[k] || String(k);
-    const partner = !blank(k) && k !== 'GOA' ? (OFF[k] || String(k)) : !blank(l) ? (PAR[String(l).trim().toUpperCase()] || 'Più uffici') : (blank(split) || split === 1 ? 'Solo Genova' : 'Non indicato');
-    const bs = blank(g[9]) ? [] : String(g[9]).split('+').map(x => idx(D.broker, x.trim()));
-    const ids = []; let tot = 0;
+
+  // 1) one record per sheet row
+  const recs = [];
+  fx.forEach((g, i) => { if (!num(g[0])) return; const f = ft[i] || [], ids = []; let tot = 0;
     [10, 14, 18, 22, 26, 30].forEach(col => { const v = f[col], u = f[col + 2];
       if (!blank(v) && (col > 10 || !['invoiced', 'to be invoiced', 'dubai'].includes(String(v).toLowerCase()))) ids.push(num(v) ? String(Math.round(v)) : clean(v));
       if (num(u)) tot += u; });
-    const kf = f[10], kfl = blank(kf) ? '' : String(kf).toLowerCase(), F = num(split) ? split : 1;
+    recs.push({r:i + 3, i, date:iso(g[0]), ow:clean(g[1]), ch:clean(g[2]), vessel:clean(g[3]), rate:g[4], bb:g[5], qty:g[6], split:g[7], c:num(g[8]) ? g[8] : 0, brk:blank(g[9]) ? [] : String(g[9]).split('+').map(x => x.trim()).filter(Boolean),
+      k:g[10], l:g[11], sd:SIDE[g[19]] || SIDE[g[18]], kf:blank(f[10]) ? '' : String(f[10]).toLowerCase(), ak:f[36], tot, ids}); });
+
+  // 2) rows written one under the other with the same date, owner, charterer, vessel, rate and quantity are ONE fixture,
+  //    shared among brokers with different percentages: they are merged, and each broker keeps the share of their row
+  const same = (a, b) => b.r === a.r + 1 && a.date === b.date && a.vessel === b.vessel && a.ow === b.ow && a.ch === b.ch && a.rate === b.rate && a.qty === b.qty;
+  const groups = []; recs.forEach(x => { const g = groups[groups.length - 1]; if (g && same(g[g.length - 1], x)) g.push(x); else groups.push([x]); });
+
+  groups.forEach(g => { const a = g[0], first = f => { const x = g.find(y => !blank(f(y))); return x ? f(x) : undefined; };
+    const c = g.reduce((s, x) => s + x.c, 0), tot = g.reduce((s, x) => s + x.tot, 0);
+    const F = g.every(x => num(x.split)) ? Math.min(1, g.reduce((s, x) => s + x.split, 0)) : (num(a.split) ? a.split : 1);
+    const k = first(x => x.k), l = first(x => x.l), sd = first(x => x.sd), kfl = first(x => x.kf) || '', ids = [].concat(...g.map(x => x.ids));
+    // broker shares: each row's commission (or its split, if the commission is missing) divided among the brokers on that row
+    const wsum = g.reduce((s, x) => s + (c > 0 ? x.c : (num(x.split) ? x.split : 1)), 0) || 1, share = new Map;
+    g.forEach(x => { const w = (c > 0 ? x.c : (num(x.split) ? x.split : 1)) / wsum; x.brk.forEach(b => share.set(b, (share.get(b) || 0) + w / x.brk.length)); });
+    const bs = [...share.keys()].map(b => idx(D.broker, b)), ws = [...share.values()].map(v => Math.round(v * 1e4) / 1e4);
+    let t = num(a.rate) && a.rate >= 1000 ? 0 : 1; if (t === 1 && num(a.qty) && a.qty > 80000) t = 2;
+    const office = blank(k) ? 'Non indicato' : OFF[k] || String(k);
+    const partner = !blank(k) && k !== 'GOA' ? (OFF[k] || String(k)) : !blank(l) ? (PAR[String(l).trim().toUpperCase()] || 'Più uffici') : (F > .98 ? 'Solo Genova' : 'Non indicato');
     let inv = 0, rem = 0, st;
     if (k === 'DUBAI' || kfl === 'dubai') st = 3;
-    else if (k === 'GOA' || blank(k)) { const ak = f[36]; rem = num(ak) ? ak : 0; inv = tot * F; if (tot <= 0 && !num(ak)) rem = c; st = tot > 0 && rem < 1 ? 0 : tot > 0 ? 1 : 2; }
-    else if (kfl === 'invoiced' || (!blank(kf) && kfl !== 'to be invoiced' && tot > 0)) { inv = tot > 0 ? tot : c; st = 0; }
+    else if (k === 'GOA' || blank(k)) { inv = tot * F;
+      rem = g.length === 1 ? (num(a.ak) ? a.ak : (tot <= 0 ? c : 0)) : Math.max(0, c - inv);
+      st = tot > 0 && rem < 1 ? 0 : tot > 0 ? 1 : 2; }
+    else if (kfl === 'invoiced' || (kfl !== '' && kfl !== 'to be invoiced' && tot > 0)) { inv = tot > 0 ? tot : c; st = 0; }
     else { rem = c; st = 2; }
-    D.rows.push([r, date, vessel, t, D.side.indexOf(sd || 'Non indicato'), idx(D.office, office), idx(D.partner, partner), st, bs, idx(D.ow, clean(g[1])), idx(D.ch, clean(g[2])),
-      Math.round(c), Math.round(inv), Math.round(rem), num(rate) ? rate : null, num(qty) ? qty : null, num(bb) ? bb : null, Math.round(F * 1000) / 1000, ids.join(' · '), Math.round(tot)]);
-    prev = {date, vessel, k, l, sd};
+    // the commission shown is the estimate until invoices exist; then it follows the invoices:
+    // fully invoiced = what was really invoiced, partly invoiced = invoiced so far plus what is still expected
+    const eff = st === 0 ? inv : st === 1 ? Math.max(c, inv) : c;
+    D.rows.push([a.r, a.date, a.vessel, t, D.side.indexOf(sd || 'Non indicato'), idx(D.office, office), idx(D.partner, partner), st, bs, idx(D.ow, a.ow), idx(D.ch, a.ch),
+      Math.round(eff), Math.round(inv), Math.round(rem), num(a.rate) ? a.rate : null, num(a.qty) ? a.qty : null, num(a.bb) ? a.bb : null, Math.round(F * 1000) / 1000, ids.join(' · '), Math.round(tot), ws, Math.round(c)]);
   });
-  // a fixture written on several rows whose splits add up to 100% is shared among Genoa brokers, not with another office
-  const ni = D.partner.indexOf('Non indicato'), grp = new Map;
-  D.rows.forEach(x => { const key = x[1] + '|' + x[2]; if (!grp.has(key)) grp.set(key, []); grp.get(key).push(x); });
-  if (ni >= 0) grp.forEach(v => { let i = 0; while (i < v.length) { let acc = 0, j = i; while (j < v.length && v[j][6] === ni && acc < .98) { acc += v[j][17]; j++; }
-    if (j - i > 1 && Math.abs(acc - 1) < .02) { for (let q = i; q < j; q++) v[q][6] = 0; i = j; } else i++; } });
+
   // full names come from the sheet too (hidden tab with one name per row): a code matches the name that starts with
   // its first letter and contains its letters in order, e.g. a code ABC matches "Anna Bianchi"
   const names = nm.map(x => clean(x[0])).filter(n => n !== 'n/d' && !/^(name|totale)$/i.test(n));
@@ -618,7 +625,7 @@ function setData(d) {
     let y = +a.slice(0, 4), m = +a.slice(5, 7); const ye = +z.slice(0, 4), me = +z.slice(5, 7);
     while (y < ye || (y === ye && m <= me)) { YM.push(y * 100 + m); if (++m > 12) { m = 1; y++; } } }
   LAST = YM[YM.length - 1] || 0;
-  R.forEach(r => { r.y = +r[1].slice(0, 4); r.m = +r[1].slice(5, 7) - 1; r.mo = YM.indexOf(r.y * 100 + r.m + 1); r.bs = r[8]; r.sh = r.bs.length ? 1 / r.bs.length : 0;
+  R.forEach(r => { r.y = +r[1].slice(0, 4); r.m = +r[1].slice(5, 7) - 1; r.mo = YM.indexOf(r.y * 100 + r.m + 1); r.bs = r[8]; r.ws = r[20] && r[20].length === r.bs.length ? r[20] : r.bs.map(() => 1 / r.bs.length);
     r.dt = r[1].slice(8) + '/' + r[1].slice(5, 7) + '/' + r[1].slice(2, 4);
     r.hay = (r[2] + ' ' + D.ow[r[9]] + ' ' + D.ch[r[10]] + ' ' + r.bs.map(b => D.broker[b] + ' ' + D.bname[b]).join(' ')).toLowerCase(); });
   bWords = D.bname.map((n, i) => (n + ' ' + D.broker[i]).toLowerCase().split(/\s+/));
@@ -640,7 +647,7 @@ const full = v => 'USD ' + nf.format(v);
 const fmt = v => M === 'n' ? int(v) : usd(v);
 const rawVal = r => M === 'n' ? 1 : M === 'c' ? r[11] : r[12];
 // with a broker selected, money counts only that broker's share of each fixture
-const wOf = r => { if (!F.broker.size) return 1; let s = 0; r.bs.forEach(b => { if (F.broker.has(b)) s += r.sh; }); return s; };
+const wOf = r => { if (!F.broker.size) return 1; let s = 0; r.bs.forEach((b, i) => { if (F.broker.has(b)) s += r.ws[i]; }); return s; };
 const val = r => M === 'n' ? 1 : rawVal(r) * wOf(r);
 const mLabel = () => M === 'n' ? 'fissati' : M === 'c' ? 'commissioni' : 'fatturato';
 const since = () => YM.length ? 'da ' + FULLM[YM[0] % 100 - 1] + ' ' + Math.floor(YM[0] / 100) : '';
@@ -741,8 +748,8 @@ function typeSplit() {
 
 function leaderboard() {
   const rows = rowsFor('broker'), agg = new Map; let grand = 0;
-  rows.forEach(r => { const v = rawVal(r); r.bs.forEach(b => { let o = agg.get(b); if (!o) agg.set(b, o = {v:0, n:0, c:0});
-    o.v += M === 'n' ? 1 : v * r.sh; o.n++; o.c += r[11] * r.sh; grand += r[11] * r.sh; }); });
+  rows.forEach(r => { const v = rawVal(r); r.bs.forEach((b, i) => { let o = agg.get(b); if (!o) agg.set(b, o = {v:0, n:0, c:0});
+    o.v += M === 'n' ? 1 : v * r.ws[i]; o.n++; o.c += r[11] * r.ws[i]; grand += r[11] * r.ws[i]; }); });
   let list = [...agg].sort((a, b) => b[1].v - a[1].v);
   const max = Math.max(1, list.length ? list[0][1].v : 1), total = list.length;
   const rank = new Map(list.map((x, i) => [x[0], i + 1]));
@@ -816,9 +823,9 @@ function summary() {
   const trows = rows.filter(colOK), sorted = trows.slice().sort(sortBy === 'c' ? (a, b) => b[11] - a[11] : (a, b) => a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : b[0] - a[0]);
   $('fx').innerHTML = sorted.slice(0, fxN).map(r => { const bk = r.bs.map(b => `<span class="code" data-tip="${esc(esc(D.bname[b]))}">${esc(D.broker[b])}</span>`).join(' ');
     return `<tr><td>${r.dt}</td><td><b>${esc(r[2] || '–')}</b><small>${esc(terms(r))}${r[16] ? ' + BB ' + nf.format(r[16]) : ''}</small></td>
-    <td><span class="tag">${D.type[r[3]]}</span></td><td>${esc(D.ow[r[9]])}</td><td>${esc(D.ch[r[10]])}</td><td>${bk}${r.bs.length > 1 ? `<small>${Math.round(r.sh * 100)}% a testa</small>` : ''}</td>
+    <td><span class="tag">${D.type[r[3]]}</span></td><td>${esc(D.ow[r[9]])}</td><td>${esc(D.ch[r[10]])}</td><td>${bk}${r.bs.length > 1 ? `<small>${r.ws.map(w => Math.round(w * 100) + '%').join(' · ')}</small>` : ''}</td>
     <td>${esc(D.office[r[5]])}<small>${r[5] === 0 ? (D.partner[r[6]] === 'Solo Genova' ? '' : D.partner[r[6]] === 'Non indicato' ? 'ufficio non indicato · ' : 'con ' + esc(D.partner[r[6]]) + ' · ') : ''}split ${nf2.format(r[17] * 100)}%</small></td>
-    <td class="r">${nf.format(r[11])}<small>fatt. ${nf.format(r[12])}</small></td><td><span class="tag t${r[7]}">${esc(D.status[r[7]])}</span>${r[13] > 0 && r[7] === 1 ? `<small>mancano ${nf.format(r[13])}</small>` : ''}${r[18] ? `<small class="inv">${esc(r[18])}</small>` : ''}</td></tr>`; }).join('');
+    <td class="r">${nf.format(r[11])}<small>${r[21] != null && r[21] !== r[11] ? 'stima ' + nf.format(r[21]) + ' · ' : ''}fatt. ${nf.format(r[12])}</small></td><td><span class="tag t${r[7]}">${esc(D.status[r[7]])}</span>${r[13] > 0 && r[7] === 1 ? `<small>mancano ${nf.format(r[13])}</small>` : ''}${r[18] ? `<small class="inv">${esc(r[18])}</small>` : ''}</td></tr>`; }).join('');
   $('fxnote').textContent = `${nf.format(Math.min(fxN, trows.length))} di ${nf.format(trows.length)}${trows.length < n ? ' (filtrati nella tabella)' : ''} · ordinati per ${sortBy === 'c' ? 'commissione' : 'data'} · importi in USD`;
   $('fxmore').hidden = fxN >= trows.length;
   if (!trows.length) $('fx').innerHTML = '<tr><td colspan="9" style="color:var(--muted);padding:16px 8px">Nessun fissato corrisponde a questi filtri di colonna.</td></tr>';
@@ -850,10 +857,11 @@ function profileOf(b) {
   const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' e ' + a[a.length - 1];
   const top = (f, k) => { const m = new Map; rows.forEach(r => { const v = f(r); if (v !== 'n/d' && v !== 'Non indicato') m.set(v, (m.get(v) || 0) + 1); }); return [...m].sort((x, y) => y[1] - x[1]).slice(0, k); };
   let c = 0, inv = 0, rem = 0, sh = 0, solo = 0, durS = 0, durN = 0; const ty = [0, 0, 0, 0], mo = new Map, co = new Map; let best = rows[0];
-  rows.forEach(r => { const w = r.sh; c += r[11] * w; inv += r[12] * w; rem += r[13] * w; sh += w; ty[r[3]]++; mo.set(r.mo, (mo.get(r.mo) || 0) + r[11] * w);
+  const shb = r => r.ws[r.bs.indexOf(b)] || 0;
+  rows.forEach(r => { const w = shb(r); c += r[11] * w; inv += r[12] * w; rem += r[13] * w; sh += w; ty[r[3]]++; mo.set(r.mo, (mo.get(r.mo) || 0) + r[11] * w);
     if (r.bs.length === 1) solo++; else r.bs.forEach(x => { if (x !== b) co.set(x, (co.get(x) || 0) + 1); });
-    if (r[3] === 0 && r[15]) { durS += r[15]; durN++; } if (r[11] * w > best[11] * best.sh) best = r; });
-  const tot = new Map; base.forEach(r => r.bs.forEach(x => tot.set(x, (tot.get(x) || 0) + r[11] * r.sh)));
+    if (r[3] === 0 && r[15]) { durS += r[15]; durN++; } if (r[11] * w > best[11] * shb(best)) best = r; });
+  const tot = new Map; base.forEach(r => r.bs.forEach((x, i) => tot.set(x, (tot.get(x) || 0) + r[11] * r.ws[i])));
   const rank = [...tot].sort((x, y) => y[1] - x[1]).findIndex(x => x[0] === b) + 1;
   const B = t => `<b>${esc(t)}</b>`, P = [];
   P.push(`${B(D.bname[b])} (${esc(D.broker[b])}) ha partecipato a ${B(nf.format(n) + ' fissati')} ${yLabel()}, per una quota personale di ${B(usd(c))} di commissioni: è ${B(rank + '°')} su ${tot.size} broker. ${sh / n > .995 ? 'Fissa sempre da solo, quindi la commissione di Genova è tutta sua' : `Di ogni commissione gli spetta in media ${art(Math.round(sh / n * 100) + '%')}, il resto va ai colleghi con cui la divide`}.`);
@@ -867,7 +875,7 @@ function profileOf(b) {
   const cl = [...co].sort((x, y) => y[1] - x[1]).slice(0, 3);
   P.push(solo === n ? 'Fissa sempre da solo.' : `Fissa da solo ${solo ? art(pct(solo)) + ' delle volte' : 'molto di rado'}; in squadra lavora più spesso con ${list(cl.map(x => esc(D.bname[x[0]]) + ' (' + x[1] + ')'))}.`);
   const bm = [...mo].sort((x, y) => y[1] - x[1])[0];
-  P.push(`Il suo mese migliore è stato ${B(ymLabel(bm[0]).toLowerCase())} (${usd(bm[1])}). Il fissato più ricco è la ${B(best[2] || 'TBN')} con ${esc(D.ow[best[9]])} del ${best.dt}, che gli vale ${usd(best[11] * best.sh)} di quota.`);
+  P.push(`Il suo mese migliore è stato ${B(ymLabel(bm[0]).toLowerCase())} (${usd(bm[1])}). Il fissato più ricco è la ${B(best[2] || 'TBN')} con ${esc(D.ow[best[9]])} del ${best.dt}, che gli vale ${usd(best[11] * shb(best))} di quota.`);
   if (c > 0) P.push(`Della sua quota risulta già fatturato ${B(usd(inv))}${rem > 0 ? `; restano da fatturare ${B(usd(rem))}` : ''}. Nella scheda PBI, su tutto il periodo, a suo nome ci sono ${B(usd(D.pbi.inv[D.broker[b]] || 0))} di fatture, di cui ${usd(D.pbi.paid[D.broker[b]] || 0)} già incassati.`);
   return P.map(x => '<p>' + x + '</p>').join('');
 }
