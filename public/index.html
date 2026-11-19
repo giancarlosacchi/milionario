@@ -496,17 +496,32 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
   <input id="nm" type="text" maxlength="24" placeholder="Nome o sigla" autocomplete="nickname" aria-label="Il tuo nome"><button type="submit">Entra</button></form>
 
 <script>
-/* icona della scheda: una moneta col dollaro che dondola piano (ridisegnata su canvas, perché Chrome non anima le GIF nelle schede) */
+/* icona della scheda: una moneta col dollaro che ogni tanto fa un giro su se stessa, con un riflesso che la attraversa
+   (ridisegnata su canvas, perché Chrome non anima le GIF nelle schede) */
 (() => { const link = document.getElementById('fav'), c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); if (!g || !link) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let t = 0;
-  function draw() { t += .16; const tilt = Math.sin(t) * .22, bob = Math.sin(t * 2) * 2.5, squash = .86 + Math.cos(t) * .14;
-    g.clearRect(0, 0, 64, 64); g.save(); g.translate(32, 32 + bob); g.rotate(tilt); g.scale(squash, 1);
-    g.beginPath(); g.arc(0, 0, 26, 0, 7); g.fillStyle = '#f5b301'; g.fill(); g.lineWidth = 4; g.strokeStyle = '#b97e00'; g.stroke();
-    g.beginPath(); g.arc(-8, -9, 9, 0, 7); g.fillStyle = 'rgba(255,255,255,.28)'; g.fill();
-    g.fillStyle = '#3b2a00'; g.font = '700 38px Helvetica, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('$', 0, 2); g.restore();
+  const REST = 2400, SPIN = 1100, R = 28, ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  function coin(sx, lift, glint) {
+    g.clearRect(0, 0, 64, 64); g.save(); g.translate(32, 33 - lift);
+    const w = Math.max(.06, Math.abs(sx)), edge = (1 - w) * 7;
+    // bordo della moneta, visibile quando è di taglio
+    g.fillStyle = '#a86f00'; g.beginPath(); g.ellipse(-edge / 2, 0, R * w + edge / 2, R, 0, 0, 7); g.fill();
+    g.beginPath(); g.ellipse(edge / 2, 0, R * w + edge / 2, R, 0, 0, 7); g.fill();
+    // faccia
+    const face = g.createLinearGradient(-R, -R, R, R); face.addColorStop(0, '#ffe27a'); face.addColorStop(.5, '#f7b500'); face.addColorStop(1, '#e09a00');
+    g.beginPath(); g.ellipse(0, 0, R * w, R, 0, 0, 7); g.fillStyle = face; g.fill();
+    g.save(); g.clip();
+    if (glint >= 0) { const x = (glint * 2 - 1) * (R + 16); g.rotate(.5); g.fillStyle = 'rgba(255,255,255,.75)'; g.fillRect(x - 5, -R * 2, 10, R * 4); g.rotate(-.5); }
+    g.restore();
+    g.lineWidth = 3; g.strokeStyle = '#b97e00'; g.beginPath(); g.ellipse(0, 0, Math.max(1, R * w - 3.5), R - 3.5, 0, 0, 7); g.stroke();
+    if (w > .18) { g.scale(w, 1); g.fillStyle = '#4a3400'; g.font = '800 40px Helvetica, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('$', 0, 3); }
+    g.restore();
     try { link.href = c.toDataURL('image/png'); } catch {} }
-  setInterval(draw, 110); })();
+  const t0 = performance.now(); let lastRest = -1;
+  setInterval(() => { const t = (performance.now() - t0) % (REST + SPIN);
+    if (t < REST) { // ferma, con un riflesso che passa una volta
+      const gl = t > 700 && t < 1300 ? (t - 700) / 600 : -1, key = gl < 0 ? 0 : Math.round(gl * 12) + 1; if (key === lastRest) return; lastRest = key; coin(1, 0, gl); }
+    else { lastRest = -1; const p = ease((t - REST) / SPIN); coin(Math.cos(p * Math.PI * 2), Math.sin(p * Math.PI) * 4, -1); } }, 45); })();
 </script>
 <script>
 /* ---- turns the raw sheet ranges from /api/data into the dataset the page uses ---- */
