@@ -639,7 +639,8 @@ function pass(r, skip) {
 }
 const rowsFor = skip => R.filter(r => pass(r, skip));
 const yearRows = () => Y ? R.filter(r => r.y === Y) : R;
-function toggle(dim, v) { const s = F[dim]; s.has(v) ? s.delete(v) : s.add(v); fxN = 50; render(); }
+// brokers are one at a time: picking another replaces the current one
+function toggle(dim, v) { const s = F[dim]; if (s.has(v)) s.delete(v); else { if (dim === 'broker') s.clear(); s.add(v); } fxN = 50; render(); }
 const ymLabel = i => MONTHS[YM[i] % 100 - 1] + ' ' + Math.floor(YM[i] / 100);
 const TNAME = ['Time charter', 'Viaggio', 'COA'], TI = [0, 1, 2];
 const labelOf = (dim, v) => dim === 'month' ? ymLabel(v) : dim === 'broker' ? D.broker[v] + ' · ' + D.bname[v] : dim === 'type' ? TNAME[v] : D[dim][v];
