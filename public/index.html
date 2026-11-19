@@ -400,10 +400,9 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
     <div class="ph"><h2>Mese per mese</h2><p id="mcap"></p></div>
     <div class="months" id="months"></div>
   </section>
-  <dl class="tile kpi k0 s3"><dt>Fissati</dt><dd></dd><small></small></dl>
-  <dl class="tile kpi k1 s3"><dt>Media per fissato</dt><dd></dd><small></small></dl>
-  <dl class="tile kpi k2 s3"><dt>Fatturato</dt><dd></dd><small></small></dl>
-  <dl class="tile kpi k3 s3"><dt>Da fatturare</dt><dd></dd><small></small></dl>
+  <dl class="tile kpi k0 s4"><dt>Fissati</dt><dd></dd><small></small></dl>
+  <dl class="tile kpi k2 s4"><dt>Fatturato</dt><dd></dd><small></small></dl>
+  <dl class="tile kpi k3 s4"><dt>Da fatturare</dt><dd></dd><small></small></dl>
 </div></header>
 
 <div id="sentinel"></div>
@@ -697,13 +696,13 @@ function leaderboard() {
   const max = Math.max(1, list.length ? list[0][1].v : 1), total = list.length;
   const rank = new Map(list.map((x, i) => [x[0], i + 1]));
   const pc = o => grand > 0 ? Math.round(o.c / grand * 100) + '% del totale' : '';
-  const tipOf = (b, o) => `<b>${esc(D.bname[b])}</b><br>${nf.format(o.n)} fissati<br>${full(o.c)} di quota commissioni<br>${full(o.c / o.n)} media per fissato`;
+  const tipOf = (b, o) => `<b>${esc(D.bname[b])}</b><br>${nf.format(o.n)} fissati<br>${full(o.c)} di quota commissioni`;
   if (searchBroker) list = list.filter(x => F.broker.has(x[0]));
   const pod = $('podium'), top3 = list.slice(0, 3); pod.classList.toggle('dim', F.broker.size > 0);
   if (!pod.children.length) pod.innerHTML = [1, 2, 3].map(i => `<button class="pod p${i}" data-dim="broker"><span class="rk">${i}</span><span class="code"></span><span class="nm"></span><span class="of"></span><span class="vl"></span><span class="sb"></span></button>`).join('');
   [...pod.children].forEach((e, i) => { const x = top3[i]; e.hidden = !x; if (!x) { e._b = undefined; return; } const [b, o] = x, ch = e._b !== b;
     e.dataset.v = b; e.setAttribute('aria-pressed', F.broker.has(b)); e.children[0].textContent = rank.get(b); e.children[1].textContent = D.broker[b]; e.children[2].textContent = D.bname[b]; e.children[3].textContent = pc(o);
-    tw(e.children[4], o.v, fmt, M); e.children[5].textContent = M === 'n' ? usd(o.c) + ' di quota' : nf.format(o.n) + ' fissati · media ' + usd(o.c / o.n);
+    tw(e.children[4], o.v, fmt, M); e.children[5].textContent = M === 'n' ? usd(o.c) + ' di quota' : nf.format(o.n) + ' fissati';
     e.dataset.tip = tipOf(b, o);
     if (ch && MOTION) [2, 3, 1].forEach((c, j) => e.children[c].animate([{opacity:0, transform:'translateY(8px)'}, {opacity:1, transform:'none'}], {duration:520, delay:i * 70 + j * 40, easing:EASE, fill:'backwards'}));
     e._b = b; });
@@ -743,7 +742,7 @@ function summary() {
   tw($('big'), M === 'n' ? n : M === 'c' ? c : p, M === 'n' ? int : usd, M);
   $('biglab').innerHTML = (M === 'n' ? '<b>fissati chiusi</b>' : M === 'c' ? '<b>di commissioni</b>' : '<b>già fatturati</b>') + (all ? ` ${yLabel()}, quota dell'ufficio di Genova.` : F.broker.size ? ` · quota personale di ${[...F.broker].slice(0, 3).map(b => esc(D.bname[b])).join(', ')}${F.broker.size > 3 ? '…' : ''}, su ${nf.format(n)} fissati.` : ` nella selezione: ${(n / Math.max(1, yr.length) * 100).toFixed(1).replace('.', ',')}% dei fissati ${Y ? "dell'anno" : 'totali'}.`);
   const base = Math.max(0, c - du);
-  const k = [[n, int, 'n', (all ? (Y ? 'tutto il ' + Y : since()) : 'su ' + nf.format(yr.length)) + ' · ' + nf.format(bset.size) + ' broker'], [n ? c / n : 0, usd, 'u', 'commissione media'],
+  const k = [[n, int, 'n', (all ? (Y ? 'tutto il ' + Y : since()) : 'su ' + nf.format(yr.length)) + ' · ' + nf.format(bset.size) + ' broker'],
     [p, usd, 'u', base > 0 ? Math.round(p / base * 100) + '% delle commissioni, Dubai escluso' : ''], [o, usd, 'u', 'quota Genova ancora da emettere']];
   document.querySelectorAll('.kpi').forEach((el, i) => { tw(el.children[1], k[i][0], k[i][1], k[i][2]); el.children[2].textContent = k[i][3]; });
   const tot = Math.max(1, p + o + du), parts = [['c-p', 'Fatturato', p], ['c-o', 'Da fatturare', o], ['c-d', 'Fatturato da Dubai', du]];
@@ -806,7 +805,7 @@ function profileOf(b) {
   const tot = new Map; base.forEach(r => r.bs.forEach(x => tot.set(x, (tot.get(x) || 0) + r[11] * r.sh)));
   const rank = [...tot].sort((x, y) => y[1] - x[1]).findIndex(x => x[0] === b) + 1;
   const B = t => `<b>${esc(t)}</b>`, P = [];
-  P.push(`${B(D.bname[b])} (${esc(D.broker[b])}) ha partecipato a ${B(nf.format(n) + ' fissati')} ${yLabel()}, per una quota personale di ${B(usd(c))} di commissioni: è ${B(rank + '°')} su ${tot.size} broker. In media porta a casa ${B(usd(c / n))} per fissato${sh / n > .995 ? ': fissa sempre da solo, quindi la commissione di Genova è tutta sua' : `: di ogni commissione gli spetta in media ${art(Math.round(sh / n * 100) + '%')}, il resto va ai colleghi con cui la divide`}.`);
+  P.push(`${B(D.bname[b])} (${esc(D.broker[b])}) ha partecipato a ${B(nf.format(n) + ' fissati')} ${yLabel()}, per una quota personale di ${B(usd(c))} di commissioni: è ${B(rank + '°')} su ${tot.size} broker. ${sh / n > .995 ? 'Fissa sempre da solo, quindi la commissione di Genova è tutta sua' : `Di ogni commissione gli spetta in media ${art(Math.round(sh / n * 100) + '%')}, il resto va ai colleghi con cui la divide`}.`);
   const tc = ty[0] / n, dur = durN ? `, con una durata media di ${Math.round(durS / durN)} giorni` : '';
   P.push((tc >= .6 ? `Lavora soprattutto in ${B('time charter')} (${pct(ty[0])} dei fissati${dur})${ty[1] ? `; i viaggi sono ${art(pct(ty[1]))}` : ''}`
         : tc <= .4 ? `Lavora soprattutto sui ${B('viaggi')} (${pct(ty[1])} dei fissati)${ty[0] ? `; il time charter pesa per ${art(pct(ty[0]))}${dur}` : ''}`
