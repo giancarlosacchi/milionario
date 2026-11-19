@@ -83,3 +83,37 @@ Note:
 `index.html` della radice, che rimanda subito a `https://milionario-1nh.pages.dev/` (pagina della password).
 Non contiene dati: puoi dare quel link a chi vuoi insieme alla password. Il repository resta pubblico perché
 GitHub Pages gratis lo richiede; nel codice non ci sono password, chiavi né dati.
+
+## Chi c'è sul sito (puntatori in diretta)
+
+Dopo l'accesso il sito chiede il nome (lo ricorda su quel computer) e mostra in alto chi è dentro, con il puntatore
+di ognuno che si muove in diretta. Per farlo serve un piccolo servizio su Cloudflare, il Worker `milionario-presenza`
+(cartella `presenza/`): tiene aperte le connessioni e rimanda le posizioni, non salva nulla e non vede i dati.
+Finché non è attivo il sito funziona normalmente, solo senza i puntatori degli altri.
+
+### Attivarlo (una volta sola)
+
+1. Installa Node.js sul PC: <https://nodejs.org> (versione LTS, installazione standard).
+2. Scarica il repository: su GitHub **Code → Download ZIP**, poi estrai lo zip.
+3. Apri il Prompt dei comandi dentro la cartella `presenza` (in Esplora file: entra nella cartella, scrivi `cmd`
+   nella barra dell'indirizzo e premi Invio) ed esegui:
+
+   ```
+   npx wrangler login
+   ```
+
+   Si apre il browser: entra con l'account Cloudflare del sito e premi **Allow**. Poi:
+
+   ```
+   npx wrangler deploy
+   ```
+
+   Alla fine deve comparire `Uploaded milionario-presenza` e `Deployed`. Se avvisa che il Worker non ha un indirizzo
+   pubblico è giusto così: lo usa solo il sito.
+4. Su Cloudflare: **Workers e Pages → milionario → Impostazioni → Associazioni (Bindings) → Aggiungi →
+   Spazio dei nomi Durable Object**. Nome variabile: `PRESENCE`. Spazio dei nomi: `milionario-presenza_Presence`.
+   Ambiente **Produzione**. Salva.
+5. **Distribuzioni → ultima distribuzione → ⋯ → Riprova distribuzione**.
+6. Apri il sito in due browser (o chiedi a un collega): devi vedere due nomi in alto e il puntatore dell'altro.
+
+Per spegnerlo: togli l'associazione `PRESENCE` dal progetto Pages e riprova la distribuzione.

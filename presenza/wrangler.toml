@@ -1,0 +1,14 @@
+# Servizio "chi c'è sul sito": si pubblica una volta sola con `npx wrangler deploy` da questa cartella.
+name = "milionario-presenza"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+workers_dev = false
+preview_urls = false
+
+[[durable_objects.bindings]]
+name = "PRESENCE"
+class_name = "Presence"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Presence"]

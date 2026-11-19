@@ -357,6 +357,24 @@ button.row:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
 .load{position:fixed;z-index:30;left:50%;top:40%;transform:translate(-50%,-50%);max-width:min(440px,calc(100% - 32px));display:flex;flex-direction:column;gap:8px;padding:18px 22px;border-radius:16px;background:var(--ink);color:var(--bg);font-size:15px;box-shadow:0 20px 50px -20px var(--shade)}
 .load span{font-size:13px;opacity:.85}.load a{color:inherit;font-weight:600}
 .out{margin-top:18px;display:flex;gap:16px;align-items:center;font-size:12px}.out a{color:var(--muted)}
+/* ---- pointer in the house orange, and everyone else's pointers live ---- */
+html{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M5 3.5 22.5 11.2Q24 12 22.6 12.9L15.6 15.6 12.9 22.6Q12 24 11.2 22.5Z' fill='%23D97757' stroke='%23fff' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 5 3, auto}
+.who{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto;align-items:center}
+.who:empty{display:none}
+.wh{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:5px 12px 5px 9px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-edge);color:var(--ink)}
+.wh i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
+.cursors{position:fixed;inset:0;z-index:25;pointer-events:none;overflow:hidden}
+.pc{position:absolute;left:0;top:0;margin:-3px 0 0 -5px;will-change:transform;transition:opacity .6s}
+.pc.idle{opacity:.35}
+.pc svg{display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
+.pc path{fill:var(--pc);stroke:#fff;stroke-width:2;stroke-linejoin:round}
+.pc span{position:absolute;left:20px;top:22px;white-space:nowrap;font-size:12px;font-weight:600;line-height:1;padding:5px 9px;border-radius:999px 999px 999px 4px;background:var(--pc);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.namebox{position:fixed;z-index:40;left:50%;top:38%;transform:translate(-50%,-50%);width:min(340px,calc(100% - 32px));display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:18px;background:var(--bg);color:var(--ink);border:1px solid var(--hair);box-shadow:0 30px 70px -20px var(--shade),0 0 0 100vmax color-mix(in srgb,var(--ink) 28%,transparent)}
+.namebox b{font-family:var(--display);font-size:18px}.namebox span{font-size:13px;color:var(--muted)}
+.namebox input{padding:11px 14px;border-radius:10px;border:1px solid var(--hair);background:var(--surface);font-size:16px}
+.namebox input:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 25%,transparent)}
+.namebox button{padding:11px;border-radius:10px;background:var(--deep);color:var(--on-blue);font-weight:700;font-size:15px;text-align:center}
 </style>
 </head>
 <body>
@@ -368,7 +386,7 @@ button.row:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
     <button data-y="2024" aria-pressed="false">2024</button>
     <button data-y="2025" aria-pressed="false">2025</button>
     <button data-y="2026" aria-pressed="false">2026</button>
-  </div></div>
+  </div><div class="who" id="who" aria-label="Chi c'è sul sito"></div></div>
 <div class="wrap bento">
   <section class="tile hero s5">
     <p class="eyebrow">Fissati Genova</p>
@@ -469,6 +487,9 @@ button.row:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
  <form method="POST" action="/logout" class="out"><button type="submit" class="more">Esci</button> <a href="vecchio.html">Sito precedente</a></form>
 </main>
 <div id="tip"></div>
+<div class="cursors" id="cursors" aria-hidden="true"></div>
+<form class="namebox" id="namebox" hidden><b>Come ti chiami?</b><span>Gli altri vedranno il tuo nome accanto al tuo puntatore.</span>
+  <input id="nm" type="text" maxlength="24" placeholder="Nome o sigla" autocomplete="nickname" aria-label="Il tuo nome"><button type="submit">Entra</button></form>
 
 <script>
 /* ---- turns the raw sheet ranges from /api/data into the dataset the page uses ---- */
@@ -862,6 +883,58 @@ document.addEventListener('pointermove', e => { const t = e.target.closest ? e.t
   t.style.setProperty('--mx', (e.clientX - b.left) + 'px'); t.style.setProperty('--my', (e.clientY - b.top) + 'px'); });
 document.addEventListener('pointerleave', hideTip); document.addEventListener('scroll', hideTip, true);
 
+/* ---- chi c'è sul sito: nome all'ingresso, elenco in alto e puntatori degli altri in diretta (/api/presence) ---- */
+const ARROW = 'M5 3.5 22.5 11.2Q24 12 22.6 12.9L15.6 15.6 12.9 22.6Q12 24 11.2 22.5Z';
+const P = {ws:null, id:null, color:'', name:'', peers:new Map, tries:0, raf:0, last:0, pend:null, timer:0};
+const store = {get() { try { return localStorage.getItem('fg-nome') || ''; } catch { return ''; } }, set(v) { try { localStorage.setItem('fg-nome', v); } catch {} }};
+const tileList = () => [...document.querySelectorAll('.tile')];
+function who() {
+  const me = P.name ? [{id:'me', name:P.name, color:P.color || 'var(--muted)', me:1}] : [];
+  keyed($('who'), me.concat([...P.peers].map(([id, p]) => ({id, name:p.name, color:p.color}))), x => x.id, x => { const b = document.createElement(x.me ? 'button' : 'span'); b.className = 'wh'; if (x.me) { b.id = 'whome'; b.title = 'Cambia nome'; } b.innerHTML = '<i></i><span></span>'; return b; },
+    (b, x) => { b.firstChild.style.background = x.color; b.lastChild.textContent = x.name + (x.me ? ' (tu)' : ''); });
+  delete $('who').dataset.empty;
+}
+function peerEl(p) { const d = document.createElement('div'); d.className = 'pc'; d.style.setProperty('--pc', p.color);
+  d.innerHTML = `<svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><path d="${ARROW}"/></svg><span></span>`; d.lastChild.textContent = p.name; $('cursors').appendChild(d); return d; }
+function addPeer(m) { const p = {name:m.name, color:m.color, k:m.k, x:m.x, y:m.y, cx:0, cy:0, seen:false, at:0}; p.el = peerEl(p); p.el.hidden = true; P.peers.set(m.id, p);
+  if (Number.isInteger(m.k) && (m.x || m.y)) movePeer(p, m); }
+function movePeer(p, m) { p.k = m.k; p.x = m.x; p.y = m.y; p.at = performance.now(); if (!p.seen) { p.seen = true; const t = target(p); p.cx = t[0]; p.cy = t[1]; p.el.hidden = false; } if (!P.raf) P.raf = requestAnimationFrame(frame); }
+// a position is "this far across this tile", so it lands on the same chart even when the two screens are laid out differently
+function target(p) { const t = p.k >= 0 ? tileList()[p.k] : null, r = t && !t.hidden ? t.getBoundingClientRect() : null;
+  if (r && r.width) return [r.left + p.x * r.width, r.top + p.y * r.height];
+  const de = document.documentElement; return [p.x * de.scrollWidth - scrollX, p.y * de.scrollHeight - scrollY]; }
+function frame(now) { P.raf = 0; let live = false;
+  P.peers.forEach(p => { if (!p.seen) return; live = true; const t = target(p), f = MOTION ? .22 : 1; p.cx += (t[0] - p.cx) * f; p.cy += (t[1] - p.cy) * f;
+    p.el.style.transform = `translate(${p.cx.toFixed(1)}px,${p.cy.toFixed(1)}px)`; p.el.classList.toggle('idle', now - p.at > 12000); });
+  if (live) P.raf = requestAnimationFrame(frame); }
+function onMsg(ev) { let m; try { m = JSON.parse(ev.data); } catch { return; }
+  if (m.t === 'hello') { P.id = m.id; P.color = m.color; P.peers.forEach(p => p.el.remove()); P.peers.clear(); m.peers.forEach(addPeer); who(); }
+  else if (m.t === 'join') { addPeer(m); who(); }
+  else if (m.t === 'leave') { const p = P.peers.get(m.id); if (p) { p.el.remove(); P.peers.delete(m.id); who(); } }
+  else if (m.t === 'n') { const p = P.peers.get(m.id); if (p) { p.name = m.name; p.el.lastChild.textContent = m.name; who(); } }
+  else if (m.t === 'm') { const p = P.peers.get(m.id); if (p) movePeer(p, m); } }
+function connect() { clearTimeout(P.timer); if (!P.name || (P.ws && P.ws.readyState < 2)) return;
+  let ws; try { ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/api/presence?name=' + encodeURIComponent(P.name)); } catch { return; }
+  P.ws = ws; ws.onopen = () => { P.tries = 0; }; ws.onmessage = onMsg;
+  ws.onclose = () => { if (P.ws !== ws) return; P.ws = null; P.peers.forEach(p => p.el.remove()); P.peers.clear(); who();
+    P.timer = setTimeout(connect, Math.min(300000, 3000 * Math.pow(2, P.tries++))); }; }
+function sendPos() { P.pend = null; const e = P.ev; if (!e || !P.ws || P.ws.readyState !== 1) return;
+  const t = e.target.closest ? e.target.closest('.tile') : null, de = document.documentElement; let m;
+  if (t) { const r = t.getBoundingClientRect(); m = {t:'m', k:tileList().indexOf(t), x:(e.clientX - r.left) / r.width, y:(e.clientY - r.top) / r.height}; }
+  else m = {t:'m', k:-1, x:(e.clientX + scrollX) / de.scrollWidth, y:(e.clientY + scrollY) / de.scrollHeight};
+  m.x = +m.x.toFixed(4); m.y = +m.y.toFixed(4); P.ws.send(JSON.stringify(m)); P.last = performance.now(); }
+function askName() { const b = $('namebox'); b.hidden = false; $('nm').value = P.name; setTimeout(() => $('nm').focus(), 50); }
+function startPresence() {
+  document.addEventListener('pointermove', e => { P.ev = e; if (P.pend) return; const wait = 45 - (performance.now() - P.last); P.pend = setTimeout(sendPos, Math.max(0, wait)); });
+  document.addEventListener('scroll', () => { if (P.peers.size && !P.raf) P.raf = requestAnimationFrame(frame); }, true);
+  addEventListener('resize', () => { if (P.peers.size && !P.raf) P.raf = requestAnimationFrame(frame); });
+  $('namebox').addEventListener('submit', e => { e.preventDefault(); const v = $('nm').value.replace(/[<>]/g, '').trim().slice(0, 24); if (!v) return; const first = !P.name; P.name = v; store.set(v); $('namebox').hidden = true;
+    if (!first && P.ws && P.ws.readyState === 1) P.ws.send(JSON.stringify({t:'n', name:v})); else connect(); who(); });
+  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('#whome')) askName(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !P.ws) { P.tries = 0; connect(); } });
+  P.name = store.get(); if (P.name) { who(); connect(); } else askName();
+}
+
 function startUI() {
   new IntersectionObserver(([en]) => $('bar').classList.toggle('stuck', !en.isIntersecting && en.boundingClientRect.top < 0)).observe($('sentinel'));
   if (MOTION) {
@@ -871,7 +944,7 @@ function startUI() {
     document.querySelectorAll('.top .tile').forEach((el, i) => el.animate([{opacity:0, transform:'translateY(18px) scale(.97)'}, {opacity:1, transform:'none'}], {duration:700, delay:i * 70, easing:EASE, fill:'backwards'}));
     $('big')._v = 0; $('big')._to = 0; $('big')._k = 'c';
   }
-  refresh(); thumbs();
+  refresh(); thumbs(); startPresence();
   new ResizeObserver(thumbs).observe($('bar'));
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(thumbs);
 }
