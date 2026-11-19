@@ -334,6 +334,11 @@ button.row:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
 .yr{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding-bottom:14px;position:relative;z-index:1}
 .yrl{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .yr .seg button{padding:8px 20px;font-size:15px}
+.tri{display:flex;flex-direction:column;gap:12px}.duo{display:flex;flex-wrap:wrap;gap:8px 30px}
+.tl{display:block;font-family:var(--display);font-stretch:112%;font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-bottom:3px}
+.mid{font-family:var(--display);font-stretch:118%;font-weight:900;font-size:clamp(26px,10.5cqw,60px);line-height:.95;letter-spacing:-.035em;white-space:nowrap}
+.hero .big{font-size:clamp(40px,17cqw,112px)}.hero .biglab{margin-top:8px}
+.bar{padding-top:14px}.top{padding-block:4px 0}.bar .yrl{margin-right:-4px}.bar .who{margin-left:0}
 /* ---- additions for this page: year switch, long month strip, status legend, PBI block ---- */
 .months{grid-template-columns:repeat(var(--n,12),minmax(0,1fr))}
 .months.many{gap:3px}.months.many .v{display:none}.months.many .m{font-size:9px;letter-spacing:0}.months.many .b{height:calc(var(--h,0) * (100% - 24px));border-radius:5px 5px 2px 2px}
@@ -385,17 +390,32 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
 <body>
 <div class="load" id="load" role="status"><b>Carico i dati dal foglio…</b></div>
 <div class="orbs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-<header class="top"><div class="wrap yr"><span class="yrl">Periodo</span>
+<div id="sentinel"></div>
+<div class="bar" id="bar"><div class="wrap">
+  <span class="yrl">Periodo</span>
   <div class="seg" id="year" role="group" aria-label="Anno"><span class="thumb"></span>
     <button data-y="0" aria-pressed="true">Tutto</button>
     <button data-y="2024" aria-pressed="false">2024</button>
     <button data-y="2025" aria-pressed="false">2025</button>
     <button data-y="2026" aria-pressed="false">2026</button>
-  </div><div class="who" id="who" aria-label="Chi c'è sul sito"></div></div>
-<div class="wrap bento">
+  </div>
+  <label class="qw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca un broker, una nave, un armatore o un noleggiatore" aria-label="Cerca un broker, una nave o un cliente"></label>
+  <div class="seg" id="metric" role="group" aria-label="Misura"><span class="thumb"></span>
+    <button data-m="c" aria-pressed="true">Commissioni</button>
+    <button data-m="n" aria-pressed="false">N° fissati</button>
+    <button data-m="p" aria-pressed="false">Fatturato</button>
+  </div>
+  <div class="who" id="who" aria-label="Chi c'è sul sito"></div>
+  <span class="hint" id="hint">Oppure clicca un mese, un broker o una barra per filtrare.</span>
+  <div class="chips" id="chips"></div>
+</div></div>
+
+<header class="top"><div class="wrap bento">
   <section class="tile hero s5">
     <p class="eyebrow">Fissati Genova</p>
-    <div><div class="big" id="big">$0</div><p class="biglab" id="biglab"></p></div>
+    <div class="tri"><div class="duo"><div><span class="tl">Dry</span><div class="mid" id="big">$0</div></div><div><span class="tl">S&amp;P</span><div class="mid" id="bigsp">$0</div></div></div>
+      <div><span class="tl">Dry + S&amp;P</span><div class="big" id="bigtot">$0</div></div><p class="biglab" id="biglab"></p></div>
     <p class="src" id="src">Foglio «CHI VUOLE ESSERE MILIONARIO?»</p>
   </section>
   <section class="tile mtile on-color s7 c-month">
@@ -406,19 +426,6 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
   <dl class="tile kpi k2 s4"><dt>Fatturato</dt><dd></dd><small></small></dl>
   <dl class="tile kpi k3 s4"><dt>Da fatturare</dt><dd></dd><small></small></dl>
 </div></header>
-
-<div id="sentinel"></div>
-<div class="bar" id="bar"><div class="wrap">
-  <label class="qw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
-    <input id="q" type="search" placeholder="Cerca un broker, una nave, un armatore o un noleggiatore" aria-label="Cerca un broker, una nave o un cliente"></label>
-  <div class="seg" id="metric" role="group" aria-label="Misura"><span class="thumb"></span>
-    <button data-m="c" aria-pressed="true">Commissioni</button>
-    <button data-m="n" aria-pressed="false">N° fissati</button>
-    <button data-m="p" aria-pressed="false">Fatturato</button>
-  </div>
-  <span class="hint" id="hint">Oppure clicca un mese, un broker o una barra per filtrare.</span>
-  <div class="chips" id="chips"></div>
-</div></div>
 
 <main class="wrap">
  <div class="bento">
@@ -487,7 +494,7 @@ button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
     <div class="tw"><table class="fx"><thead><tr><th>MOA</th><th>Nave</th><th>Venditore</th><th>Compratore</th><th class="r">Prezzo</th><th class="r">Comm.</th><th>Co-broker</th><th class="r">Quota Genova</th><th>Fattura</th></tr></thead><tbody id="sp"></tbody></table></div>
   </section>
  </div>
- <p class="note">Fonte: foglio Google «CHI VUOLE ESSERE MILIONARIO?», schede GENOA FIXTURES, FATTURE, PBI e GENOA S&amp;P, lette in diretta: la pagina si aggiorna da sola ogni minuto. Commissione = colonna «MIN. COMM», cioè la quota stimata di Genova (rata × quantità × 1,25% × split). Quando un fissato ha più broker la commissione è divisa in parti uguali; nel conteggio ogni broker conta 1 per ogni fissato a cui ha partecipato. Fatturato = quota Genova delle fatture già emesse (somma fatture × split per i fissati fatturati da Genova; importo fatturato all'ufficio estero per gli altri). Può superare la commissione stimata quando il noleggio dura più del previsto. I fissati fatturati da Dubai sono contati nelle commissioni ma tenuti fuori dalla fatturazione. Time charter o viaggio è dedotto dalla rata (da 1.000 $ in su = noleggio a giornata). Sono contati come COA i fissati con quantità sopra 80.000 tonnellate. Gli incassi esistono solo come totali nella scheda PBI. L'ultimo mese è parziale.</p>
+ <p class="note">Fonte: foglio Google «CHI VUOLE ESSERE MILIONARIO?», schede GENOA FIXTURES, FATTURE, PBI e GENOA S&amp;P, lette in diretta: la pagina si aggiorna da sola ogni minuto. Commissione = colonna «MIN. COMM», cioè la quota stimata di Genova (rata × quantità × 1,25% × split). Quando un fissato ha più broker la commissione è divisa in parti uguali; nel conteggio ogni broker conta 1 per ogni fissato a cui ha partecipato. Fatturato = quota Genova delle fatture già emesse (somma fatture × split per i fissati fatturati da Genova; importo fatturato all'ufficio estero per gli altri). Può superare la commissione stimata quando il noleggio dura più del previsto. In alto, Dry è il totale dei fissati, S&P la quota Genova delle compravendite (segue solo periodo, mese e broker) e il terzo numero è la somma. I fissati fatturati da Dubai sono contati nelle commissioni ma tenuti fuori dalla fatturazione. Time charter o viaggio è dedotto dalla rata (da 1.000 $ in su = noleggio a giornata). Sono contati come COA i fissati con quantità sopra 80.000 tonnellate. Gli incassi esistono solo come totali nella scheda PBI. L'ultimo mese è parziale.</p>
  <form method="POST" action="/logout" class="out"><button type="submit" class="more">Esci</button> <a href="vecchio.html">Sito precedente</a></form>
 </main>
 <div id="tip"></div>
@@ -770,7 +777,10 @@ function summary() {
   const rows = rowsFor(), yr = yearRows(); let c = 0, p = 0, o = 0, du = 0; const bset = new Set, debt = new Map;
   rows.forEach(r => { const w = wOf(r); c += r[11] * w; p += r[12] * w; o += r[13] * w; if (r[7] === 3) du += r[11] * w; r.bs.forEach(b => bset.add(b)); if (r[13] > 0) debt.set(r[9], (debt.get(r[9]) || 0) + r[13] * w); });
   const n = rows.length, all = n === yr.length;
-  tw($('big'), M === 'n' ? n : M === 'c' ? c : p, M === 'n' ? int : usd, M);
+  // the three headline figures: dry cargo, sale & purchase, and both. S&P follows the period, month and broker filters only
+  const spr = D.sp.filter(s => (!Y || +s[0].slice(0, 4) === Y) && (!F.month.size || F.month.has(YM.indexOf(+s[0].slice(0, 4) * 100 + +s[0].slice(5, 7)))) && (!F.broker.size || [...F.broker].some(b => D.broker[b] === s[9])));
+  const dryv = M === 'n' ? n : M === 'c' ? c : p, spv = M === 'n' ? spr.length : spr.reduce((a, s) => a + (M === 'p' && !s[11] ? 0 : s[10]), 0), hf = M === 'n' ? int : usd;
+  tw($('big'), dryv, hf, M); tw($('bigsp'), spv, hf, M); tw($('bigtot'), dryv + spv, hf, M);
   $('biglab').innerHTML = (M === 'n' ? '<b>fissati chiusi</b>' : M === 'c' ? '<b>di commissioni</b>' : '<b>già fatturati</b>') + (all ? ` ${yLabel()}, quota dell'ufficio di Genova.` : F.broker.size ? ` · quota personale di ${[...F.broker].slice(0, 3).map(b => esc(D.bname[b])).join(', ')}${F.broker.size > 3 ? '…' : ''}, su ${nf.format(n)} fissati.` : ` nella selezione: ${(n / Math.max(1, yr.length) * 100).toFixed(1).replace('.', ',')}% dei fissati ${Y ? "dell'anno" : 'totali'}.`);
   const base = Math.max(0, c - du);
   const k = [[n, int, 'n', (all ? (Y ? 'tutto il ' + Y : since()) : 'su ' + nf.format(yr.length)) + ' · ' + nf.format(bset.size) + ' broker'],
@@ -866,7 +876,7 @@ function sandp() {
   let tot = 0; $('sp').innerHTML = D.sp.map(s => { tot += s[10]; return `<tr><td>${s[0].slice(8)}/${s[0].slice(5, 7)}/${s[0].slice(2, 4)}</td><td><b>${esc(s[3])}</b></td><td>${esc(s[1])}</td><td>${esc(s[2])}</td>
     <td class="r">${nf.format(s[4])}</td><td class="r">${nf.format(s[6])}<small>${nf2.format(s[5] * 100)}%</small></td><td>${esc(s[7])}<small>${s[8] ? 'gli spettano ' + nf.format(s[8]) : ''}</small></td>
     <td class="r"><b>${nf.format(s[10])}</b><small>${esc(s[9])}</small></td><td><span class="tag t${s[11] ? 0 : 2}">${s[11] ? 'Fatturato' : 'Da fatturare'}</span><small class="inv">${esc(s[11])}</small></td></tr>`; }).join('');
-  $('spnote').textContent = `${D.sp.length} compravendite · ${full(tot)} di quota Genova · non entrano nei numeri sopra`;
+  $('spnote').textContent = `${D.sp.length} compravendite · ${full(tot)} di quota Genova · contate in alto nel totale S&P`;
 }
 
 function render() {
