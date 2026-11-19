@@ -358,17 +358,17 @@ button.row:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
 .load span{font-size:13px;opacity:.85}.load a{color:inherit;font-weight:600}
 .out{margin-top:18px;display:flex;gap:16px;align-items:center;font-size:12px}.out a{color:var(--muted)}
 /* ---- pointer in the house orange, and everyone else's pointers live ---- */
-html{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M5 3.5 22.5 11.2Q24 12 22.6 12.9L15.6 15.6 12.9 22.6Q12 24 11.2 22.5Z' fill='%23D97757' stroke='%23fff' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 5 3, auto}
+html{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M8 7 20 12.2 14.6 14.6 12.2 20Z' fill='%23fff' stroke='%23fff' stroke-width='8.5'/%3E%3Cpath d='M8 7 20 12.2 14.6 14.6 12.2 20Z' fill='%23D97757' stroke='%23D97757' stroke-width='5'/%3E%3C/g%3E%3C/svg%3E") 6 5, auto}
 .who{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto;align-items:center}
 .who:empty{display:none}
 .wh{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:5px 12px 5px 9px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-edge);color:var(--ink)}
 .wh i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
 button.wh:hover{background:color-mix(in srgb,var(--ink) 8%,var(--glass))}
 .cursors{position:fixed;inset:0;z-index:25;pointer-events:none;overflow:hidden}
-.pc{position:absolute;left:0;top:0;margin:-3px 0 0 -5px;will-change:transform;transition:opacity .6s}
+.pc{position:absolute;left:0;top:0;margin:-5px 0 0 -6px;will-change:transform;transition:opacity .6s}
 .pc.idle{opacity:.35}
 .pc svg{display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
-.pc path{fill:var(--pc);stroke:#fff;stroke-width:2;stroke-linejoin:round}
+.pc path{fill:var(--pc);stroke:var(--pc);stroke-width:5;stroke-linejoin:round}.pc path.o{fill:#fff;stroke:#fff;stroke-width:8.5}
 .pc span{position:absolute;left:20px;top:22px;white-space:nowrap;font-size:12px;font-weight:600;line-height:1;padding:5px 9px;border-radius:999px 999px 999px 4px;background:var(--pc);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 .namebox{position:fixed;z-index:40;left:50%;top:38%;transform:translate(-50%,-50%);width:min(340px,calc(100% - 32px));display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:18px;background:var(--bg);color:var(--ink);border:1px solid var(--hair);box-shadow:0 30px 70px -20px var(--shade),0 0 0 100vmax color-mix(in srgb,var(--ink) 28%,transparent)}
 .namebox b{font-family:var(--display);font-size:18px}.namebox span{font-size:13px;color:var(--muted)}
@@ -884,7 +884,7 @@ document.addEventListener('pointermove', e => { const t = e.target.closest ? e.t
 document.addEventListener('pointerleave', hideTip); document.addEventListener('scroll', hideTip, true);
 
 /* ---- chi c'è sul sito: nome all'ingresso, elenco in alto e puntatori degli altri in diretta (/api/presence) ---- */
-const ARROW = 'M5 3.5 22.5 11.2Q24 12 22.6 12.9L15.6 15.6 12.9 22.6Q12 24 11.2 22.5Z';
+const ARROW = 'M8 7 20 12.2 14.6 14.6 12.2 20Z';
 const P = {ws:null, id:null, color:'', name:'', peers:new Map, tries:0, raf:0, last:0, pend:null, timer:0};
 const store = {get() { try { return localStorage.getItem('fg-nome') || ''; } catch { return ''; } }, set(v) { try { localStorage.setItem('fg-nome', v); } catch {} }};
 const tileList = () => [...document.querySelectorAll('.tile')];
@@ -895,7 +895,7 @@ function who() {
   delete $('who').dataset.empty;
 }
 function peerEl(p) { const d = document.createElement('div'); d.className = 'pc'; d.style.setProperty('--pc', p.color);
-  d.innerHTML = `<svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><path d="${ARROW}"/></svg><span></span>`; d.lastChild.textContent = p.name; $('cursors').appendChild(d); return d; }
+  d.innerHTML = `<svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><path class="o" d="${ARROW}"/><path d="${ARROW}"/></svg><span></span>`; d.lastChild.textContent = p.name; $('cursors').appendChild(d); return d; }
 function addPeer(m) { const p = {name:m.name, color:m.color, k:m.k, x:m.x, y:m.y, cx:0, cy:0, seen:false, at:0}; p.el = peerEl(p); p.el.hidden = true; P.peers.set(m.id, p);
   if (Number.isInteger(m.k) && (m.x || m.y)) movePeer(p, m); }
 function movePeer(p, m) { p.k = m.k; p.x = m.x; p.y = m.y; p.at = performance.now(); if (!p.seen) { p.seen = true; const t = target(p); p.cx = t[0]; p.cy = t[1]; p.el.hidden = false; } if (!P.raf) P.raf = requestAnimationFrame(frame); }
