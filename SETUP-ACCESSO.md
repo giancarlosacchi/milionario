@@ -5,9 +5,25 @@ Come funziona:
 ```
 browser ──► milionario-1nh.pages.dev (Cloudflare Pages, gratis)
              ├─ functions/_middleware.js  chiede la password a ogni visita (pagina e dati)
-             ├─ public/index.html         la dashboard
-             └─ /api/sheet ──(account di servizio Google)──► Google Sheet privato
+             ├─ public/index.html         la dashboard "Fissati Genova" (non contiene dati)
+             ├─ /api/data  ──(account di servizio Google)──► Google Sheet privato (API Google Sheets)
+             ├─ public/vecchio.html       la dashboard precedente, di riserva
+             └─ /api/sheet ──(account di servizio Google)──► Google Sheet privato (solo per vecchio.html)
 ```
+
+- La pagina legge il foglio a ogni apertura e poi di nuovo ogni minuto: quello che scrivi nel foglio compare da solo,
+  senza ripubblicare nulla. Legge solo le schede GENOA FIXTURES, FATTURE, PBI, GENOA S&P e i nomi in Foglio14;
+  RUBRICA e FERIE non vengono mai lette.
+
+## Attivare Google Sheets API (una volta sola)
+
+`/api/data` usa l'API ufficiale Google Sheets, che va attivata nel progetto dell'account di servizio:
+
+1. <https://console.cloud.google.com/apis/library/sheets.googleapis.com?project=milionario-513011> (account giancarlosacchi@gmail.com)
+2. Clic su **Abilita**. È gratis e non chiede una carta.
+3. Dopo un minuto ricarica il sito. Finché non è attiva, chi entra viene portato da solo a `vecchio.html`,
+   che continua a funzionare come prima. Per vedere l'errore senza essere rimandato apri
+   `https://milionario-1nh.pages.dev/#nuovo`.
 
 - Chi non conosce la password vede solo la pagina "Accesso riservato": niente grafici, niente dati.
 - Dopo l'accesso il browser resta collegato per 14 giorni (pulsante **Esci** in fondo alla pagina per uscire).
