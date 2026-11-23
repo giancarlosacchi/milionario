@@ -345,6 +345,33 @@ button.row:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
 .qw:focus-within,.qw:has(#q:not(:placeholder-shown)){width:min(250px,100%)}
 .qw:focus-within #q,.qw:has(#q:not(:placeholder-shown)) #q{padding-right:16px}
 .qw:not(:focus-within) #q::placeholder{color:transparent}
+.fx tr[data-fx]{transition:background .2s}
+.fx tr[data-fx]:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.fx tr.on,.fx tbody tr.on:hover{background:color-mix(in srgb,var(--blue) 12%,transparent)}
+.fx tr.on td{border-bottom-color:transparent}
+.fx tr.det,.fx tbody tr.det:hover{background:color-mix(in srgb,var(--blue) 6%,transparent)}
+.fx tr.det>td{padding:0;border-bottom:2px solid var(--blue)}
+.detw{padding:6px 16px 20px;display:flex;flex-direction:column;gap:14px;max-width:1100px}
+.dh b{font-family:var(--display);font-weight:800;font-size:18px;display:block}.dh span{font-size:12.5px;color:var(--muted)}
+.dst{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ds{background:var(--glass);border:1px solid var(--glass-edge);border-radius:12px;padding:10px 12px;min-width:0}
+.ds span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted);display:block}
+.ds span i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}.ds span i:not([class]),.ds span i[class=""]{display:none}
+.ds b{font-family:var(--display);font-weight:900;font-size:19px;white-space:nowrap;display:block;margin-top:2px}
+.fx td .ds small{font-size:11.5px;min-height:1.3em}
+.dbar{position:relative;height:12px;border-radius:6px;background:color-mix(in srgb,var(--ink) 10%,transparent)}
+.dbar span{position:absolute;inset:0 auto 0 0;border-radius:6px;background:linear-gradient(90deg,color-mix(in srgb,var(--green) 45%,transparent),var(--green))}
+.dbar em{position:absolute;right:0;top:-19px;font-style:normal;font-size:11.5px;font-weight:700;color:var(--green)}
+.dn{margin:0;font-size:13.5px;color:var(--ink2);line-height:1.5}
+.dgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px 28px;align-items:start}
+table.dinv{border-collapse:collapse;width:100%;font-size:12.5px}
+.dinv th{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:4px 8px;border-bottom:1px solid var(--hair)}
+.fx .dinv td{padding:5px 8px;border-bottom:1px solid var(--hair);overflow-wrap:anywhere}
+.dinv th.r,.dinv td.r{text-align:right;white-space:nowrap}.dinv em{font-style:normal;color:var(--muted)}
+.fx .dinv tfoot td{font-weight:700;border-bottom:0}
+.dl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:var(--muted);display:block;margin-bottom:6px}
+.dbks{display:flex;flex-direction:column;gap:6px;font-size:13px}.dbk .code{margin-right:8px}
+@media (max-width:760px){.dst{grid-template-columns:repeat(2,minmax(0,1fr))}.dgrid{grid-template-columns:minmax(0,1fr)}}
 /* ---- additions for this page: year switch, long month strip, status legend, PBI block ---- */
 .months{grid-template-columns:repeat(var(--n,12),minmax(0,1fr))}
 .months.many{gap:3px}.months.many .v{display:none}.months.many .m{font-size:9px;letter-spacing:0}.months.many .b{height:calc(var(--h,0) * (100% - 24px));border-radius:5px 5px 2px 2px}
@@ -373,7 +400,7 @@ button.row:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
 /* ---- pointer in the house orange ---- */
 html{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M8 7 20 12.2 14.6 14.6 12.2 20Z' fill='%23fff' stroke='%23fff' stroke-width='8.5'/%3E%3Cpath d='M8 7 20 12.2 14.6 14.6 12.2 20Z' fill='%23D97757' stroke='%23D97757' stroke-width='5'/%3E%3C/g%3E%3C/svg%3E") 6 5, auto}
 /* sopra a qualcosa di cliccabile: stessa freccia a colori invertiti, bianca dentro e arancione fuori */
-button,a,[role="button"],summary,label[for],.qw:not(:focus-within){cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M8 7 20 12.2 14.6 14.6 12.2 20Z' fill='%23D97757' stroke='%23D97757' stroke-width='8.5'/%3E%3Cpath d='M8 7 20 12.2 14.6 14.6 12.2 20Z' fill='%23fff' stroke='%23fff' stroke-width='2.2'/%3E%3C/g%3E%3C/svg%3E") 6 5, pointer}
+button,a,[role="button"],summary,label[for],.qw:not(:focus-within),tr[data-fx]{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M8 7 20 12.2 14.6 14.6 12.2 20Z' fill='%23D97757' stroke='%23D97757' stroke-width='8.5'/%3E%3Cpath d='M8 7 20 12.2 14.6 14.6 12.2 20Z' fill='%23fff' stroke='%23fff' stroke-width='2.2'/%3E%3C/g%3E%3C/svg%3E") 6 5, pointer}
 button:disabled,.mo:disabled{cursor:inherit}
 .who{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto;align-items:center}
 </style>
@@ -536,12 +563,13 @@ function buildData(vr) {
 
   // 1) one record per sheet row
   const recs = [];
-  fx.forEach((g, i) => { if (!num(g[0])) return; const f = ft[i] || [], ids = []; let tot = 0;
+  fx.forEach((g, i) => { if (!num(g[0])) return; const f = ft[i] || [], ids = [], invs = []; let tot = 0;
     [10, 14, 18, 22, 26, 30].forEach(col => { const v = f[col], u = f[col + 2];
       if (!blank(v) && (col > 10 || !['invoiced', 'to be invoiced', 'dubai'].includes(String(v).toLowerCase()))) ids.push(num(v) ? String(Math.round(v)) : clean(v));
-      if (num(u)) tot += u; });
+      if (num(u)) tot += u;
+      if (!blank(v) || num(u)) invs.push([blank(v) ? '' : num(v) ? String(Math.round(v)) : clean(v), num(f[col + 1]) ? f[col + 1] : null, num(u) ? u : null, num(f[col + 3]) ? f[col + 3] : null]); });
     recs.push({r:i + 3, i, date:iso(g[0]), ow:clean(g[1]), ch:clean(g[2]), vessel:clean(g[3]), rate:g[4], bb:g[5], qty:g[6], split:g[7], c:num(g[8]) ? g[8] : 0, brk:blank(g[9]) ? [] : String(g[9]).split('+').map(x => x.trim()).filter(Boolean),
-      k:g[10], l:g[11], sd:SIDE[g[19]] || SIDE[g[18]], kf:blank(f[10]) ? '' : String(f[10]).toLowerCase(), ak:f[36], tot, ids}); });
+      k:g[10], l:g[11], sd:SIDE[g[19]] || SIDE[g[18]], kf:blank(f[10]) ? '' : String(f[10]).toLowerCase(), ak:f[36], tot, ids, invs}); });
 
   // 2) rows written one under the other with the same date, owner, charterer, vessel, rate and quantity are ONE fixture,
   //    shared among brokers with different percentages: they are merged, and each broker keeps the share of their row
@@ -570,7 +598,7 @@ function buildData(vr) {
     // fully invoiced = what was really invoiced, partly invoiced = invoiced so far plus what is still expected
     const eff = st === 0 ? inv : st === 1 ? Math.max(c, inv) : c;
     D.rows.push([a.r, a.date, a.vessel, t, D.side.indexOf(sd || 'Non indicato'), idx(D.office, office), idx(D.partner, partner), st, bs, idx(D.ow, a.ow), idx(D.ch, a.ch),
-      Math.round(eff), Math.round(inv), Math.round(rem), num(a.rate) ? a.rate : null, num(a.qty) ? a.qty : null, num(a.bb) ? a.bb : null, Math.round(F * 1000) / 1000, ids.join(' · '), Math.round(tot), ws, Math.round(c)]);
+      Math.round(eff), Math.round(inv), Math.round(rem), num(a.rate) ? a.rate : null, num(a.qty) ? a.qty : null, num(a.bb) ? a.bb : null, Math.round(F * 1000) / 1000, ids.join(' · '), Math.round(tot), ws, Math.round(c), [].concat(...g.map(x => x.invs))]);
   });
 
   // full names come from the sheet too (hidden tab with one name per row): a code matches the name that starts with
@@ -779,6 +807,35 @@ function colOK(r) { for (let k = 0; k < 9; k++) { const q = CF[k]; if (!q) conti
     if (!colText[k](r).toLowerCase().includes(q)) return false; } return true; }
 
 const SCLS = ['st0', 'st1', 'st2', 'st3'];
+/* ---- everything about the invoicing of one fixture, shown under its row ---- */
+let openFx = null, justOpened = false;
+const d2 = v => v.toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
+const stat = (lab, val, sub, cls) => `<div class="ds"><span><i class="${cls || ''}"></i>${lab}</span><b>${val}</b><small>${sub || ''}</small></div>`;
+function detail(r) {
+  if (r[3] === SPT) { const x = D.sp[r[0] - 100000] || [];
+    return `<div class="detw"><div class="dh"><b>${esc(x[3])}</b><span>Sale &amp; Purchase · MOA del ${r.dt} · ${esc(x[1])} → ${esc(x[2])}</span></div>
+      <div class="dst">${stat('Prezzo nave', full(x[4]), '')}${stat('Commissione totale', full(x[6]), nf2.format(x[5] * 100) + '% del prezzo')}${stat('Al co-broker', full(x[8]), esc(x[7]))}${stat('Quota Genova', full(x[10]), esc(x[9]), 'c-p')}</div>
+      <p class="dn">${x[11] ? 'Fatturato: ' + esc(x[11]) : 'Nessuna fattura emessa finora.'}</p></div>`; }
+  const est = r[21] != null ? r[21] : r[11], gross = r[19], F = r[17], inv = r[12], rem = r[13], st = r[7], invs = r[22] || [], tc = r[3] === 0, unit = tc ? 'gg' : 't';
+  const done = invs.reduce((a, x) => a + (x[1] || 0), 0), goa = r[5] === 0 || D.office[r[5]] === 'Non indicato', pct = est > 0 ? inv / est * 100 : 0, diff = inv - est;
+  const SPECIAL = {'invoiced':'Fatturata all\'ufficio di ' + D.office[r[5]], 'to be invoiced':'Pronta da fatturare all\'ufficio di ' + D.office[r[5]], 'dubai':'Fatturata da Dubai'};
+  const say = st === 3 ? 'Fattura l\'ufficio di Dubai: questo fissato resta fuori dalla fatturazione di Genova.'
+    : st === 2 ? (goa ? 'Nessuna fattura emessa finora: vale ancora la stima.' : `La fattura la emette ${esc(D.office[r[5]])}: Genova deve ancora fatturargli la sua quota, per ora vale la stima.`)
+    : st === 1 ? `Fatturato in parte: mancano ancora ${full(rem)} rispetto alla stima${tc && r[15] && done ? ` (${nf2.format(done)} giorni fatturati su ${nf2.format(r[15])} previsti)` : ''}.`
+    : Math.abs(diff) < 2 ? 'Fatturato del tutto, in linea con la stima.' : `Fatturato del tutto: ${full(Math.abs(diff))} ${diff > 0 ? 'in più' : 'in meno'} della stima (${diff > 0 ? '+' : '−'}${Math.abs(Math.round(diff / Math.max(1, est) * 100))}%)${tc && r[15] && done ? `, con ${nf2.format(done)} giorni fatturati su ${nf2.format(r[15])} previsti` : ''}.`;
+  const rowsHtml = invs.map(x => { const sp = SPECIAL[String(x[0]).toLowerCase()];
+    return `<tr><td>${sp ? `<em>${esc(sp)}</em>` : esc(x[0] || '–')}</td><td class="r">${x[1] != null ? nf2.format(x[1]) + ' ' + unit : ''}</td><td class="r">${x[2] != null ? d2(x[2]) : ''}</td><td class="r">${x[3] ? x[3].toLocaleString('it-IT', {minimumFractionDigits:4, maximumFractionDigits:4}) : ''}</td><td class="r">${x[2] != null && x[3] ? d2(x[2] / x[3]) : ''}</td></tr>`; }).join('');
+  const shares = r.bs.map((b, i) => `<span class="dbk"><span class="code">${esc(D.broker[b])}</span>${Math.round(r.ws[i] * 100)}% · ${full(r[11] * r.ws[i])}</span>`).join('');
+  return `<div class="detw">
+    <div class="dh"><b>${esc(r[2])}</b><span>${esc(D.ow[r[9]])} → ${esc(D.ch[r[10]])} · C/P del ${r.dt} · ${esc(terms(r))}${r[16] ? ' + BB ' + nf.format(r[16]) : ''} · riga ${r[0]} del foglio</span></div>
+    <div class="dst">${stat('Stima', full(est), 'quota Genova ' + nf2.format(F * 100) + '%')}${stat('Fatture emesse', full(gross), goa ? invs.length + (invs.length === 1 ? ' fattura' : ' fatture') + ', tutti gli uffici' : 'importo verso ' + esc(D.office[r[5]]))}${stat('Quota Genova fatturata', full(inv), est > 0 ? Math.round(pct) + '% della stima' : '', 'c-p')}${stat('Da fatturare', full(rem), st === 1 ? 'residuo sulla stima' : '', 'c-o')}</div>
+    <div class="dbar" data-tip="${Math.round(pct)}% della stima già fatturato"><span style="width:${Math.min(100, pct)}%"></span>${pct > 100 ? `<em>+${Math.round(pct - 100)}% sulla stima</em>` : ''}</div>
+    <p class="dn">${say}${goa && F < .995 && gross > 0 ? ` Agli altri uffici (${esc(D.partner[r[6]])}) spettano ${full(gross * (1 - F))} di queste fatture.` : ''}</p>
+    <div class="dgrid"><div>${invs.length ? `<table class="dinv"><thead><tr><th>Fattura</th><th class="r">${tc ? 'Giorni' : 'Quantità'}</th><th class="r">USD</th><th class="r">EUR/$</th><th class="r">EUR</th></tr></thead><tbody>${rowsHtml}</tbody>
+      ${invs.length > 1 ? `<tfoot><tr><td>Totale</td><td class="r">${done ? nf2.format(done) + ' ' + unit : ''}</td><td class="r">${d2(invs.reduce((a, x) => a + (x[2] || 0), 0))}</td><td></td><td></td></tr></tfoot>` : ''}</table>` : '<p class="dn" style="margin:0">Nessuna fattura registrata nella scheda FATTURE.</p>'}</div>
+      <div><span class="dl">Come si divide la commissione di ${full(r[11])}</span><div class="dbks">${shares || '<span class="dn">Nessun broker indicato</span>'}</div></div></div>
+  </div>`;
+}
 function summary() {
   const rows = rowsFor(), yr = yearRows(); let c = 0, p = 0, o = 0, du = 0; const bset = new Set, debt = new Map;
   rows.forEach(r => { const w = wOf(r); c += r[11] * w; p += r[12] * w; o += r[13] * w; if (r[7] === 3) du += r[11] * w; r.bs.forEach(b => bset.add(b)); if (r[13] > 0) debt.set(r[9], (debt.get(r[9]) || 0) + r[13] * w); });
@@ -808,10 +865,11 @@ function summary() {
   // fixture table
   const trows = rows.filter(colOK), sorted = trows.slice().sort(sortBy === 'c' ? (a, b) => b[11] - a[11] : (a, b) => a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : b[0] - a[0]);
   $('fx').innerHTML = sorted.slice(0, fxN).map(r => { const bk = r.bs.map(b => `<span class="code" data-tip="${esc(esc(D.bname[b]))}">${esc(D.broker[b])}</span>`).join(' ');
-    return `<tr><td>${r.dt}</td><td><b>${esc(r[2] || '–')}</b><small>${esc(terms(r))}${r[16] ? ' + BB ' + nf.format(r[16]) : ''}</small></td>
+    return `<tr data-fx="${r[0]}" tabindex="0" aria-expanded="${openFx === r[0]}"${openFx === r[0] ? ' class="on"' : ''}><td>${r.dt}</td><td><b>${esc(r[2] || '–')}</b><small>${esc(terms(r))}${r[16] ? ' + BB ' + nf.format(r[16]) : ''}</small></td>
     <td><span class="tag">${D.type[r[3]]}</span></td><td>${esc(D.ow[r[9]])}</td><td>${esc(D.ch[r[10]])}</td><td>${bk}${r.bs.length > 1 ? `<small>${r.ws.map(w => Math.round(w * 100) + '%').join(' · ')}</small>` : ''}</td>
     <td>${esc(D.office[r[5]])}<small>${r[5] === 0 ? (D.partner[r[6]] === 'Solo Genova' ? '' : D.partner[r[6]] === 'Non indicato' ? 'ufficio non indicato · ' : 'con ' + esc(D.partner[r[6]]) + ' · ') : ''}split ${nf2.format(r[17] * 100)}%</small></td>
-    <td class="r">${nf.format(r[11])}<small>${r[21] != null && r[21] !== r[11] ? 'stima ' + nf.format(r[21]) + ' · ' : ''}fatt. ${nf.format(r[12])}</small></td><td><span class="tag t${r[7]}">${esc(D.status[r[7]])}</span>${r[13] > 0 && r[7] === 1 ? `<small>mancano ${nf.format(r[13])}</small>` : ''}${r[18] ? `<small class="inv">${esc(r[18])}</small>` : ''}</td></tr>`; }).join('');
+    <td class="r">${nf.format(r[11])}<small>${r[21] != null && r[21] !== r[11] ? 'stima ' + nf.format(r[21]) + ' · ' : ''}fatt. ${nf.format(r[12])}</small></td><td><span class="tag t${r[7]}">${esc(D.status[r[7]])}</span>${r[13] > 0 && r[7] === 1 ? `<small>mancano ${nf.format(r[13])}</small>` : ''}${r[18] ? `<small class="inv">${esc(r[18])}</small>` : ''}</td></tr>` + (openFx === r[0] ? `<tr class="det"><td colspan="9">${detail(r)}</td></tr>` : ''); }).join('');
+  if (justOpened && MOTION) { const d = document.querySelector('#fx .detw'); if (d) d.animate([{opacity:0, transform:'translateY(-10px)'}, {opacity:1, transform:'none'}], {duration:420, easing:EASE}); } justOpened = false;
   $('fxnote').textContent = `${nf.format(Math.min(fxN, trows.length))} di ${nf.format(trows.length)}${trows.length < n ? ' (filtrati nella tabella)' : ''} · ordinati per ${sortBy === 'c' ? 'commissione' : 'data'} · importi in USD`;
   $('fxmore').hidden = fxN >= trows.length;
   if (!trows.length) $('fx').innerHTML = '<tr><td colspan="9" style="color:var(--muted);padding:16px 8px">Nessun fissato corrisponde a questi filtri di colonna.</td></tr>';
@@ -895,6 +953,7 @@ function thumb(seg) { const b = seg.querySelector('[aria-pressed="true"]'), t = 
 const thumbs = () => document.querySelectorAll('.seg').forEach(thumb);
 const press = (seg, t) => { [...seg.querySelectorAll('button')].forEach(b => b.setAttribute('aria-pressed', b === t)); thumb(seg); };
 document.addEventListener('click', e => {
+  const row = e.target.closest('tr[data-fx]'); if (row && !e.target.closest('button,a,input')) { const id = +row.dataset.fx; openFx = openFx === id ? null : id; justOpened = openFx !== null; return summary(); }
   const t = e.target.closest('button'); if (!t) return;
   if (t.dataset.dim) { if (t.dataset.dim === 'broker' && searchBroker) { searchBroker = false; $('q').value = ''; } return toggle(t.dataset.dim, +t.dataset.v); }
   if (t.dataset.y) { Y = +t.dataset.y; F.month.clear(); fxN = 50; press($('year'), t); return render(); }
@@ -914,6 +973,7 @@ function search(txt) { const q = txt.trim().toLowerCase(), ws = q.split(/\s+/).f
   const hit = q.length >= 2 ? bWords.map((w, i) => ws.every(x => w.some(y => y.startsWith(x))) ? i : -1).filter(i => i >= 0) : [];
   if (hit.length && hit.length <= 3) { hit.forEach(b => F.broker.add(b)); searchBroker = true; Q = ''; } else Q = q;
   fxN = 50; render(); }
+document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('tr[data-fx]')) { e.preventDefault(); e.target.click(); } });
 let cT; document.addEventListener('input', e => { const c = e.target.closest && e.target.closest('.cf'); if (!c) return; clearTimeout(cT); cT = setTimeout(() => { document.querySelectorAll('.cf').forEach(x => CF[+x.dataset.col] = x.value.trim().toLowerCase()); fxN = 50; summary(); }, 150); });
 let qT; $('q').addEventListener('input', e => { clearTimeout(qT); qT = setTimeout(() => search(e.target.value), 160); });
 
